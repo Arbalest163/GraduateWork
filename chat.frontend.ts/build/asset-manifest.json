@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/static/css/main.81dec829.css",
+    "main.js": "/static/js/main.978af127.js",
+    "static/js/787.7f21b476.chunk.js": "/static/js/787.7f21b476.chunk.js",
+    "static/media/ozero-gory-sosny.jpg": "/static/media/ozero-gory-sosny.a0ce153d655393b5dc77.jpg",
+    "static/media/send.png": "/static/media/send.81405a6be58fea1109dc.png",
+    "static/media/smile.png": "/static/media/smile.a829588808be3d35ebb4.png",
+    "index.html": "/index.html",
+    "main.81dec829.css.map": "/static/css/main.81dec829.css.map",
+    "main.978af127.js.map": "/static/js/main.978af127.js.map",
+    "787.7f21b476.chunk.js.map": "/static/js/787.7f21b476.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.81dec829.css",
+    "static/js/main.978af127.js"
+  ]
+}

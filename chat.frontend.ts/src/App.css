@@ -1,0 +1,150 @@
+
+.App {
+  text-align: center;
+  background-color: #ffffff;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  color: rgb(37, 37, 37);
+}
+
+header {
+  background: rgb(0, 67, 212);
+  height: auto;
+  width: 100vw;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+}
+
+main {
+  background: rgb(0, 255, 234);
+  height: calc(100vh - 80px);
+  flex-grow: 1;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+footer {
+  flex-shrink: 1;
+  background: rgb(0, 122, 41);
+}
+
+.pointer-hover:hover {
+  cursor: pointer;
+}
+
+.logout-link {
+  font-size: 20px;
+  font-weight: bold;
+  position: absolute;
+  right: 0;
+  margin-right: 3%;
+}
+
+.image-container {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.container-center {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.container-title {
+  display: flex;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.container-input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 5px 10px;
+}
+
+.container-date {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px 10px;
+}
+
+  
+.input {
+  height: calc(20px + 1vmin);
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgb(155, 155, 155);
+  font-size: 14px;
+}
+
+.input:focus {
+  outline: 2px solid rgb(145, 145, 145);
+}
+
+.button {
+  height: calc(30px + 1vmin);
+  border-radius: 10px;
+  font-size: 16px;
+  color: blue;
+  border: 1px solid rgb(204, 204, 204);
+  margin: 5px 5px;
+}
+
+.text-register {
+  font-size: calc(2px + 1vmin);
+}
+
+.input-placeholder {
+  position: absolute;
+  top: 10%;
+  bottom: 10%;
+  right: 3%;
+  color: #999;
+  pointer-events: none;
+  font-size: 14px;
+}
+
+.error {
+  border: 2px solid red;
+}
+
+.error .input {
+  padding: 0;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  margin: 5px 5px;
+}

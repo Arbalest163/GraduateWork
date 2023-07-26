@@ -1,0 +1,56 @@
+.small-active-button {
+  height: 30px;
+  width: 30px;
+  margin: 5px 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0);
+  border: 0px;
+}
+
+.menu {
+    position: relative;
+}
+
+.menu-items {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: rgb(255, 255, 255);
+    border-radius: 5px;
+    width: auto;
+}
+
+.menu-item {
+    font-size: 20px;
+    border-radius: 5px;
+    border: 0px;
+    margin: 2px 5px;
+    white-space: nowrap;
+}
+
+.bg-blue {
+    background-color: blue;
+} 
+.bg-white {
+    background-color: white;
+}
+
+.bg-gray {
+    background-color: gray;
+}
+
+.bg-chats-menu-item {
+    background-color: rgba(42, 63, 255, 0.651);
+}
+
+.text-black {
+    color: black;
+}
+
+.text-white {
+    color: white;
+}
