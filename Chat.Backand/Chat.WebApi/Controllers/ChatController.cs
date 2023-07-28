@@ -5,7 +5,6 @@ using Chat.Application.Chats.Commands.DeleteCommand;
 using Chat.Application.Chats.Commands.UpdateChat;
 using Chat.Application.Chats.Queries.GetChat;
 using Chat.Application.Chats.Queries.GetChatList;
-using Chat.Application.Users.Commands;
 using Chat.WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +17,10 @@ public class ChatController : BaseController
 {
     private readonly IMapper _mapper;
 
-    public ChatController(IMapper mapper) => _mapper = mapper;
+    public ChatController(IMapper mapper)
+    {
+        _mapper = mapper;
+    }
 
     /// <summary>
     /// Получить список чатов
@@ -35,9 +37,9 @@ public class ChatController : BaseController
     [Route("chats")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<ChatListVm>> GetChats([FromQuery]GetChatListQuery? filter = null)
+    public async Task<ActionResult<ChatListVm>> GetChats([FromQuery]GetChatListQuery query)
     {
-        var vm = await Mediator.Send(filter);
+        var vm = await Mediator.Send(query);
         return Ok(vm);
     }
 

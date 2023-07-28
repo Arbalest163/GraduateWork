@@ -1,7 +1,7 @@
 import { Menu } from "@headlessui/react";
-import { FC, Fragment, ReactElement } from "react";
+import { FC, Fragment, ReactElement, useEffect, useRef, useState } from "react";
 import './action-chats-component.css'
-import { Button } from "../api/models/models";
+import { Button, OpeningDirection } from "../api/models/models";
 
 interface ActionChatsProps {
     buttons: Button[];
@@ -9,12 +9,44 @@ interface ActionChatsProps {
 }
 
 const ActionChatsComponent: FC<ActionChatsProps> = ({buttons, imageMenuButton}) : ReactElement => {
-    
+    const [openingDirection, setOpeningDirection] = useState<OpeningDirection>(OpeningDirection.DownLeft);
+    const menuItemsRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (menuItemsRef.current) {
+            const menuItemsRect = menuItemsRef.current.getBoundingClientRect();
+            const { top, bottom, left, right } = menuItemsRect;
+
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            const topPosition = top;
+            const bottomPosition = windowHeight - bottom;
+            const leftPosition = left;
+            const rightPosition = windowWidth - right;
+
+            if(bottomPosition > topPosition) {
+                if(leftPosition > rightPosition) {
+                    setOpeningDirection(OpeningDirection.DownLeft);
+                } else {
+                    setOpeningDirection(OpeningDirection.DownRight);
+                }
+                
+            } else {
+                if(leftPosition > rightPosition) {
+                    setOpeningDirection(OpeningDirection.UpLeft);
+                } else {
+                    setOpeningDirection(OpeningDirection.UpRight);
+                }
+            }
+        }
+    },[]);
+
     return (
         <div>
-            <Menu as="div" className="menu">
+            <Menu as="div" className="menu" ref={menuItemsRef}>
                 <Menu.Button className="small-active-button">{imageMenuButton}</Menu.Button>
-                <Menu.Items className="menu-items bg-white">
+                <Menu.Items  className={`menu-items bg-white ${openingDirection.toString()}`}>
                     {buttons.map((button) => (
                         <Menu.Item key={button.label} as={Fragment}>
                             {({ active }) => (

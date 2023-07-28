@@ -5,7 +5,7 @@ const StartUrlComponent : FC<{}> = (): ReactElement => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate('/chats');
+    navigate('/auth/login');
   }, []);
 
   return (<></>);

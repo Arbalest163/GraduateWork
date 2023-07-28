@@ -35,7 +35,6 @@
 .chat-item {
   font-size: calc(15px + 1vmin);
   border-radius: 5px;
-  background-color: #46b5ffa4;
 }
 
 .chat-item.selected {
@@ -59,6 +58,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 10px 10px 0px 10px;
+  background-color: aqua;
+  border-radius: 10px;
 }
 
 .message-container {

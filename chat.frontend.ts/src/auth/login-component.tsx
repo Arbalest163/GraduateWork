@@ -2,7 +2,7 @@ import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ApiError, AuthQuery, ErrorValidation } from '../api/models/models';
 import authClient from '../api/clients/auth-client';
-import { deleteToken, saveToken } from '../api/local-storage/local-storage';
+import { deleteToken, saveRefreshToken, saveToken } from '../api/local-storage/local-storage';
 import './login-component.css';
 import ozero_gory_sosny from './ozero-gory-sosny.jpg'
 import useAuthContext from '../hooks/useAuthContext';
@@ -12,7 +12,7 @@ import { ErrorModal } from '../modals/error-modal-component';
 import useValidationErrors from '../hooks/useValidationErrors';
 
 const LoginComponent : FC<{}> = (): ReactElement => {
-  const { currentUser, setCurrentUser } = useAuthContext();
+  const { setCurrentUser } = useAuthContext();
   const {openModal} = useModalContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,9 +48,10 @@ const LoginComponent : FC<{}> = (): ReactElement => {
     authClient.login(authQuery)
       .then((token) => {
         saveToken(token.accessToken);
+        saveRefreshToken(token.refreshToken);
         authClient.getUser().then((user) => {
           setCurrentUser(user);
-          navigate(from, { replace: true });
+          navigate('/chats', { replace: true });
         });
       })
       .catch((error : ApiError) => {

@@ -22,6 +22,8 @@ public class Configuration
             ValidateIssuerSigningKey = true,
             ValidAudience = "ChatWebApi",
             ValidateAudience = true,
+            RequireExpirationTime = true,
+            ClockSkew = TimeSpan.Zero,
         };
     }
 }

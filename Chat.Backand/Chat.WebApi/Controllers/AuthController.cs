@@ -58,18 +58,14 @@ public class AuthController : BaseController
     /// <summary>
     /// Обновление токена доступа
     /// </summary>
-    /// <param name="refresh_token">Токен обновления</param>
+    /// <param name="refreshTokenCommand">Токен обновления</param>
     /// <returns></returns>
     [HttpPost]
-    [Route("refresh")]
+    [Route("refresh-token")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<Token>> Refresh([Required]string refresh_token)
+    public async Task<ActionResult<Token>> RefreshToken([FromBody] RefreshTokenUserCommand refreshTokenCommand)
     {
-        var command = new RefreshTokenUserCommand
-        {
-            RefreshToken = refresh_token,
-        };
-        var token = await Mediator.Send(command);
+        var token = await Mediator.Send(refreshTokenCommand);
 
         return Ok(token);
     }

@@ -8,7 +8,7 @@ export class ChatClient extends ClientBase {
       super(api_version);
     }
 
-    getChats(chatsFilter?: ChatsFilter): Promise<ChatListVm> {
+    getChats(chatsFilter: ChatsFilter): Promise<ChatListVm> {
         return this.$http.get("chats", chatsFilter)
             .then(this.handleResponse, this.handleError);
     }

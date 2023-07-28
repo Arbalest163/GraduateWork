@@ -72,6 +72,7 @@ const RegistrationComponent : FC<{}> = (): ReactElement => {
   }
 
   const onClickToDate = () => {
+    clearValidationError('birthday');
     setIsCalendarActive(!isCalendarActive);
   }
 

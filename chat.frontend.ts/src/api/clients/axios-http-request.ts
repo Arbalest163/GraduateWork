@@ -1,21 +1,82 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import mem from "mem";
+import { deleteTokens, getRefreshToken, getToken, saveRefreshToken, saveToken } from '../local-storage/local-storage';
+import { Token } from '../models/models';
+
+const headers = {
+  "Content-Type": "application/json",
+  Accept: 'application/json',
+};
 
 export class $AxiosHttpRequest {
   private baseUrl: string;
-  private http: AxiosInstance;
+  private axiosInstance: AxiosInstance;
 
-  constructor(baseUrl: string, http: AxiosInstance = axios) {
-    this.http = http;
+  constructor(baseUrl: string) {
+    this.axiosInstance = axios.create({
+      baseURL: baseUrl,
+      headers: headers,
+    });
+    this.axiosInstance.interceptors.request.use(
+      this.requestInterceptor, error => Promise.reject(error));
+
+    this.axiosInstance.interceptors.response.use(
+      response => response, this.responseInterceptor
+    );
     this.baseUrl = baseUrl;
   }
 
-  protected transformConfig(config: AxiosRequestConfig) {
-    const token = localStorage.getItem('token');
-    config.headers = {
-        ...config.headers,
-        Authorization: 'Bearer ' + token,
-    };
-    return Promise.resolve(config);
+  requestInterceptor = (config : InternalAxiosRequestConfig) => {
+    const token = getToken();
+    if(token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      delete config.headers.Authorization;
+    }
+
+    return config;
+  }
+
+  responseInterceptor = async (error : any) => {
+    const config = error?.config;
+
+    if (error?.response?.status === 401) {
+      const token =  await this.memoizedRefreshToken();
+
+      if(token) {
+        if (token?.accessToken) {
+          config.headers.Authorization = `Bearer ${token?.accessToken}`;
+        } else {
+          delete config?.headers.Authorization;
+        }
+        return axios(config);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+
+  get(url: string, queryParams?: Record<string, any>): Promise<AxiosResponse> {
+    const fullUrl = this.buildUrl(url, queryParams);
+    return this.axiosInstance.get(fullUrl);
+  }
+
+  post(url: string, body?: any, queryParams?: Record<string, any>): Promise<AxiosResponse> {
+    const content = JSON.stringify(body ??= {});
+    const fullUrl = this.buildUrl(url, queryParams);
+    return this.axiosInstance.post(fullUrl, content);
+  }
+
+  delete(url: string, queryParams?: Record<string, any>): Promise<AxiosResponse> {
+    const fullUrl = this.buildUrl(url, queryParams);
+    return this.axiosInstance.delete(fullUrl);
+  }
+
+  put(url: string, body: any, queryParams?: Record<string, any>): Promise<AxiosResponse> {
+    const content = JSON.stringify(body ??= {});
+    const fullUrl = this.buildUrl(url, queryParams);
+
+    return this.axiosInstance.put(fullUrl, content);
   }
 
   private buildQueryParams(params: Record<string, any>, parentKey?: string): string {
@@ -44,65 +105,23 @@ export class $AxiosHttpRequest {
     return `${this.baseUrl}/${url}${searchParams ? '?' + searchParams : ''}`;
   }
 
-  async get(url: string, queryParams?: Record<string, any>): Promise<AxiosResponse> {
-    const fullUrl = this.buildUrl(url, queryParams);
-
-    let config: AxiosRequestConfig = {
-      headers: {
-        Accept: 'application/json'
-      }
-    };
-    return this.transformConfig(config)
-      .then(config => {
-        return this.http.get(fullUrl, config);
-      });
+  private refreshTokenFn = async () : Promise<Token | null> => {
+    const http = axios.create({
+      baseURL: this.baseUrl,
+      headers: headers,
+    });
+    const refreshToken = getRefreshToken();
+    const response = await http.post("auth/refresh-token", {refreshToken: refreshToken});
+    const token : Token = response.data;
+    if(token) {
+      saveToken(token.accessToken);
+      saveRefreshToken(token.refreshToken);
+    } else {
+      deleteTokens();
+    }
+    
+    return token;
   }
 
-  async post(url: string, body?: any, queryParams?: Record<string, any>): Promise<AxiosResponse> {
-    const content = JSON.stringify(body ??= {});
-    const fullUrl = this.buildUrl(url, queryParams);
-
-    let config: AxiosRequestConfig = {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json-patch+json',
-        Accept: 'application/json'
-      }
-    };
-
-    return this.transformConfig(config)
-      .then(config => {
-        return this.http.post(fullUrl, content, config);
-      });
-  }
-
-  async delete(url: string, queryParams?: Record<string, any>): Promise<AxiosResponse> {
-    const fullUrl = this.buildUrl(url, queryParams);
-
-    let config: AxiosRequestConfig = {
-      headers: {}
-    };
-
-    return this.transformConfig(config)
-      .then(config => {
-        return this.http.delete(fullUrl, config);
-      });
-  }
-
-  async put(url: string, body: any, queryParams?: Record<string, any>): Promise<AxiosResponse> {
-    const content = JSON.stringify(body ??= {});
-    const fullUrl = this.buildUrl(url, queryParams);
-
-    let config: AxiosRequestConfig = {
-      headers: {
-        'Content-Type': 'application/json-patch+json',
-        Accept: 'application/json'
-      }
-    };
-
-    return this.transformConfig(config)
-      .then(config => {
-        return this.http.put(fullUrl, content, config);
-      });
-  }
+  private memoizedRefreshToken = mem(this.refreshTokenFn, {maxAge: 10000});
 }

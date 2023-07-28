@@ -14,37 +14,41 @@ public class JwtTokensService : IJwtTokensService
     private const string RefreshTypeToken = "refresh_token";
 
     private readonly IDatabase _redisDb;
+    private readonly ChatApiOptions _options;
 
-    public JwtTokensService(IDatabase redisDb) => _redisDb = redisDb;
+    public JwtTokensService(IDatabase redisDb, ChatApiOptions options)
+    {
+        _redisDb = redisDb;
+        _options = options;
+    }
 
     public (string, TimeSpan) GenerateAccessToken(string userId)
     {
-        //var expireTime = TimeSpan.FromHours(1);
-        var expireTime = TimeSpan.FromSeconds(10);
+        var expiredTime = TimeSpan.FromMinutes(_options.LifeTimeAccessToken);
         var scope = "ChatWebApi";
-        var accessToken = GenerateToken(userId, expireTime, scope);
+        var accessToken = GenerateToken(userId, expiredTime, scope);
 
         var tokenHandler = new JwtSecurityTokenHandler();
         string encodedToken = tokenHandler.WriteToken(accessToken);
 
         var redisKey = GetRedisKey(userId, AccessTypeToken);
 
-        StoreJwtToken(encodedToken, expireTime, redisKey);
+        StoreJwtToken(encodedToken, expiredTime, redisKey);
 
-        return (encodedToken, expireTime);
+        return (encodedToken, expiredTime);
     }
 
     public string GenerateRefreshToken(string userId)
     {
-        var expireTime = TimeSpan.FromDays(30);
-        var refreshToken = GenerateToken(userId, expireTime);
+        var expiredTime = TimeSpan.FromDays(_options.LifeTimeRefreshToken);
+        var refreshToken = GenerateToken(userId, expiredTime);
 
         var tokenHandler = new JwtSecurityTokenHandler();
         string encodedRefreshToken = tokenHandler.WriteToken(refreshToken);
 
         var redisKey = GetRedisKey(userId, RefreshTypeToken);
 
-        StoreJwtToken(encodedRefreshToken, expireTime, redisKey);
+        StoreJwtToken(encodedRefreshToken, expiredTime, redisKey);
 
         return encodedRefreshToken;
     }
@@ -102,7 +106,7 @@ public class JwtTokensService : IJwtTokensService
 
         var claims = new List<Claim>()
         {
-            new Claim(ClaimTypes.NameIdentifier, userId),
+            new Claim(CustomClaimTypes.UserId, userId),
         };
 
         if (scope != null)
@@ -139,7 +143,7 @@ public class JwtTokensService : IJwtTokensService
 
     private TokenPayLoad ParseJwt(JwtSecurityToken jwt)
     {
-        var userIdRaw = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var userIdRaw = jwt.Claims.FirstOrDefault(c => c.Type == CustomClaimTypes.UserId)?.Value;
 
         Guid.TryParse(userIdRaw, out var userId);
 

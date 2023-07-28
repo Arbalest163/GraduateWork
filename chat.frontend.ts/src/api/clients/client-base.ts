@@ -1,7 +1,8 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { $AxiosHttpRequest } from "./axios-http-request";
-import { ApiError, ErrorValidation } from "../models/models";
-import { saveCurrentUser } from "../local-storage/local-storage";
+import { ApiError, ErrorValidation, Token } from "../models/models";
+import { getRefreshToken, saveCurrentUser, saveToken } from "../local-storage/local-storage";
+import { refreshToken } from "./auth-client";
 
 const baseUrlKeenetic = 'https://chatapi.noragami.keenetic.link';
 const baseUrlLocal = 'http://192.168.2.114:5162';
@@ -23,7 +24,7 @@ export class ClientBase {
     const response = error.response;
 
     if (response) {
-      if(response.status === 401){
+      if(response.status === 401) {
         saveCurrentUser(null);
       }
       let data = JSON.stringify(response.data);

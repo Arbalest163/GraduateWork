@@ -24,6 +24,30 @@
     width: auto;
 }
 
+.down-right {
+    top: 100%;
+    left: 0px;
+    margin-left: 5px;
+}
+
+.down-left {
+    top: 100%;
+    right: 0px;
+    margin-right: 5px;
+}
+
+.up-right {
+    bottom: 100%;
+    left: 0px;
+    margin-left: 5px;
+}
+
+.up-left {
+    bottom: 100%;
+    right: 0px;
+    margin-right: 5px;
+}
+
 .menu-item {
     font-size: 20px;
     border-radius: 5px;

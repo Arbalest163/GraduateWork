@@ -51,6 +51,13 @@ export enum OrderField {
     Title = "Title",
 }
 
+export enum OpeningDirection {
+    DownRight = 'down-rigth',
+    DownLeft = 'down-left',
+    UpRight = 'up-right',
+    UpLeft = 'up-left',
+}
+
 export interface ProblemDetails {
     type?: string | null;
     title?: string | null;

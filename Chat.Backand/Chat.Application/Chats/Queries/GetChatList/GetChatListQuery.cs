@@ -2,9 +2,9 @@
 
 public class GetChatListQuery : IRequest<ChatListVm>
 {
-    public Guid UserId { get; set; }
-    public OrderInfo OrderInfo { get; set; } = new OrderInfo();
-    public SearchInfo SearchInfo { get; set; } = new SearchInfo();
+    public Guid? UserId { get; set; } = Guid.Empty;
+    public OrderInfo? OrderInfo { get; set; } = new OrderInfo();
+    public SearchInfo? SearchInfo { get; set; } = new SearchInfo();
 
 }
 
@@ -17,7 +17,7 @@ public class OrderInfo
 public class SearchInfo
 {
     public SearchField SearchField { get; set; } = SearchField.Users;
-    public string SearchText { get; set; } = string.Empty;
+    public string? SearchText { get; set; } = string.Empty;
     public DateTime? DateCreateChat { get; set; }
 }
 

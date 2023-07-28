@@ -15,8 +15,11 @@ const ChatComponent: FC<{}> = (): ReactElement => {
   const {openModal} = useModalContext();
   const [chats, setChats] = useState<ChatLookupDto[] | undefined>(undefined);
   const [selectedChat, setSelectedChat] = useState<ChatLookupDto | undefined>(undefined);
-  const [chatsFilter, setChatFilter] = useState<ChatsFilter | null>(null);
- 
+  const [chatsFilter, setChatFilter] = useState<ChatsFilter>({searchInfo: { 
+    searchField: SearchField.Title, 
+    searchText: '', 
+  }});
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,23 +33,18 @@ const ChatComponent: FC<{}> = (): ReactElement => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       getChats();
-    }, 5000);
+    }, 15000);
 
     return () => clearInterval(intervalId);
   }, []);
 
   const handleChangeFilter = (filterText: string) => {
-    if (filterText?.length !== 0) {
-      const chatsFilter = {
-        searchInfo: { 
-          searchField: SearchField.Title, 
-          searchText: filterText 
-        }
-      };
-      setChatFilter(chatsFilter);
-    } else {
-      setChatFilter(null);
-    }
+    const filter = {
+      searchInfo: { 
+        searchField: SearchField.Title, 
+        searchText: filterText, 
+    }};
+    setChatFilter(filter);
   };
 
   const openErrorModal = (errorMessage: string) => {
@@ -54,7 +52,7 @@ const ChatComponent: FC<{}> = (): ReactElement => {
   }
 
   const getChats = () => {
-    chatClient.getChats(chatsFilter ?? undefined)
+    chatClient.getChats(chatsFilter)
       .then((chatListVm) => {
         setChats(chatListVm.chats);
       })

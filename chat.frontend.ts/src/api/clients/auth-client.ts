@@ -1,3 +1,4 @@
+import { getRefreshToken } from "../local-storage/local-storage";
 import { AuthQuery, CurrentUser, RegisterUserDto, Token } from "../models/models";
 import { ClientBase } from "./client-base";
 
@@ -32,10 +33,18 @@ export class AuthClient extends ClientBase {
       return this.$http.get('auth/check-state')
         .then(this.handleResponse, this.handleError);
     }
+
+    refreshToken(refreshToken: string | null) : Promise<Token> {
+      return this.$http.post('auth/refresh', { refreshToken: refreshToken })
+        .then(this.handleResponse, this.handleError);
+    }
 };
 
 const authClient = new AuthClient(apiVersion);
 export default authClient;
 
-
+export const refreshToken = () => {
+  const refreshToken = getRefreshToken();
+  return authClient.refreshToken(refreshToken);
+}
     

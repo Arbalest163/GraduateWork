@@ -13,11 +13,12 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthContextProvider = ({children} : {children: JSX.Element}) => {
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(getCurrentUserLocalStorage());
-  
-  useEffect(() => {
-    saveCurrentUser(currentUser);
-  }, []);
+  const [currentUser, setUser] = useState<CurrentUser | null>(getCurrentUserLocalStorage());
+
+  const setCurrentUser = (user :CurrentUser | null) => {
+    setUser(user);
+    saveCurrentUser(user);
+  }
 
   return (
     <AuthContext.Provider value={{currentUser, setCurrentUser}}>

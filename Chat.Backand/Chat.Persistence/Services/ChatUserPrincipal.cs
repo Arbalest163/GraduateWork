@@ -16,7 +16,7 @@ public class ChatUserPrincipal : IChatUserPrincipal
         get
         {
             var id = _httpContextAccessor.HttpContext?.User?
-               .FindFirstValue(ClaimTypes.NameIdentifier);
+               .FindFirstValue(CustomClaimTypes.UserId);
             //var id = "0875ab1b-5078-4432-bffc-e53936f87608";
             Guid.TryParse(id, out var userId);
             return userId;

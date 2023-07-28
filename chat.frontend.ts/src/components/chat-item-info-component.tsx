@@ -32,16 +32,16 @@ const ChatItemInfoComponent: FC<ChatItemInfoProps> = ({chatId}) : ReactElement =
     }, [chatId]);
 
     const getChat = () => {
-    if (chatId){
-        chatClient.getChat(chatId)
-        .then((chat) => {
-            setChat(chat);
-        })
-        .catch((error: ApiError) => {
-            if(error.message)
-            openErrorModal(error.message);
-        });
-    }
+        if (chatId){
+            chatClient.getChat(chatId)
+            .then((chat) => {
+                setChat(chat);
+            })
+            .catch((error: ApiError) => {
+                if(error.message)
+                openErrorModal(error.message);
+            });
+        }
     }
     
     const handleMessageSend = () => {

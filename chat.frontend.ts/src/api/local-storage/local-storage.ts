@@ -4,11 +4,25 @@ export const saveToken = (token: string | null | undefined) => {
     localStorage.setItem('token', token ? token : '');
 }
 
+export const getToken = () => {
+    return localStorage.getItem('token');
+}
+
 export const saveRefreshToken = (refreshToken: string | null | undefined) => {
     localStorage.setItem('refresh_token', refreshToken ? refreshToken : '');
 }
+
+export const getRefreshToken = () : string | null => {
+    return localStorage.getItem('refresh_token');
+}
+
 export const deleteToken = () => {
     localStorage.removeItem('token');
+}
+
+export const deleteTokens = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
 }
 
 export const saveCurrentUser = (currentUser: CurrentUser | null) => {
