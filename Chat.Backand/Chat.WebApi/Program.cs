@@ -103,6 +103,7 @@ async Task Configure(WebApplication app)
     await DbInitializer.Initialize(context, passwordManager);
 
     app.UseRouting();
+    app.UseStaticFiles();
     app.UseCustomExceptionHandler();
     app.UseRequestTimingMiddleware();
     //app.UserCusomCorsMiddleware();

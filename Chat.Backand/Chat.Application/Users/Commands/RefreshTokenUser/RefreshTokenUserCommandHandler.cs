@@ -21,13 +21,13 @@ namespace Chat.Application.Users.Commands.RefreshTokenUser
 
             var tokenPayload = _jwtTokensService.ParseRefreshToken(request.RefreshToken);
 
-            var user = await _chatDbContext.Users.FirstOrDefaultAsync(u => u.Id == tokenPayload.UserId);
+            var user = await _chatDbContext.Users.Include(x => x.UserRole).FirstOrDefaultAsync(u => u.Id == tokenPayload.UserId);
             if (user is null)
             {
                 throw new UnauthorizedAccessException();
             }
 
-            var (accessToken, expireTime) = _jwtTokensService.GenerateAccessToken(user.Id.ToString());
+            var (accessToken, expireTime) = _jwtTokensService.GenerateAccessToken(user.Id.ToString(), user.UserRole.Role.ToString());
             var refreshToken = _jwtTokensService.GenerateRefreshToken(user.Id.ToString());
 
             var token = new Token

@@ -12,20 +12,6 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
             .NotEmpty()
             .MaximumLength(20)
             .WithName("Ник");
-        RuleFor(registerUserCommand => registerUserCommand.Firstname)
-            .NotEmpty()
-            .MaximumLength(20)
-            .WithName("Имя");
-        RuleFor(registerUserCommand => registerUserCommand.Lastname)
-            .NotEmpty()
-            .MaximumLength(20)
-            .WithName("Фамилия");
-        RuleFor(registerUserCommand => registerUserCommand.Middlename)
-            .MaximumLength(20)
-            .WithName("Отчество");
-        RuleFor(registerUserCommand => registerUserCommand.Birthday)
-            .NotNull()
-            .WithName("Дата рождения");
         RuleFor(registerUserCommand => registerUserCommand.Password)
             .NotEmpty()
             .Length(6, 20)

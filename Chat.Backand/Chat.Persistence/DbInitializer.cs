@@ -82,13 +82,51 @@ public class DbInitializer
 
     private static IEnumerable<Message> GetMessages(User user, Domain.Chat chat)
     {
-        foreach(var i in 0..5)
+        var date1 = DateTime.Now;
+        var date2 = date1.AddDays(-1);
+        var date3 = date1.AddDays(-2);
+        var date4 = date1.AddDays(-3);
+        var date5 = date1.AddDays(-4);
+
+        foreach (var i in 0..10)
         {
             yield return new Message
             {
                 Id = Guid.NewGuid(),
-                DateSendMessage = DateTime.Now,
-                Text = $"Текстовое сообщение {i}",
+                DateSendMessage = date1,
+                Text = $"Текстовое сообщение {i} {date1}",
+                User = user,
+                Chat = chat,
+            };
+            yield return new Message
+            {
+                Id = Guid.NewGuid(),
+                DateSendMessage = date2,
+                Text = $"Текстовое сообщение {i} {date2}",
+                User = user,
+                Chat = chat,
+            };
+            yield return new Message
+            {
+                Id = Guid.NewGuid(),
+                DateSendMessage = date3,
+                Text = $"Текстовое сообщение {i} {date3}",
+                User = user,
+                Chat = chat,
+            };
+            yield return new Message
+            {
+                Id = Guid.NewGuid(),
+                DateSendMessage = date4,
+                Text = $"Текстовое сообщение {i} {date4}",
+                User = user,
+                Chat = chat,
+            };
+            yield return new Message
+            {
+                Id = Guid.NewGuid(),
+                DateSendMessage = date5,
+                Text = $"Текстовое сообщение {i} {date5}",
                 User = user,
                 Chat = chat,
             };

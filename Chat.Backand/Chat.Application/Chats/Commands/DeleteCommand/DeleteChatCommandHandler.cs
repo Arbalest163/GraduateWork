@@ -6,29 +6,31 @@ public class DeleteChatCommandHandler
     : IRequestHandler<DeleteChatCommand>
 {
     private readonly IChatDbContext _dbContext;
+    private readonly IChatUserPrincipal _userPrincipal;
 
-    public DeleteChatCommandHandler(IChatDbContext dbContext) =>
+    public DeleteChatCommandHandler(IChatDbContext dbContext, IChatUserPrincipal userPrincipal)
+    {
         _dbContext = dbContext;
+        _userPrincipal = userPrincipal;
+    }
 
     public async Task Handle(DeleteChatCommand request,
         CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException();
-        }
-        var entity = await _dbContext.Chats
+        var chat = await _dbContext.Chats
+            .Include(x => x.User)
             .Where(chat => chat.Id == request.ChatId)
-            .Where(chat => chat.User.Id == user.Id || user.UserRole.Role == Role.Admin)
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (entity == null)
+        if (chat == null)
         {
             throw new NotFoundException(nameof(Domain.Chat), request.ChatId);
         }
 
-        _dbContext.Chats.Remove(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        if(chat.User.Id == _userPrincipal.UserId || _userPrincipal.Role == Role.Admin)
+        {
+            _dbContext.Chats.Remove(chat);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }

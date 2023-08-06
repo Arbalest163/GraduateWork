@@ -22,11 +22,11 @@ public class JwtTokensService : IJwtTokensService
         _options = options;
     }
 
-    public (string, TimeSpan) GenerateAccessToken(string userId)
+    public (string, TimeSpan) GenerateAccessToken(string userId, string role)
     {
         var expiredTime = TimeSpan.FromMinutes(_options.LifeTimeAccessToken);
         var scope = "ChatWebApi";
-        var accessToken = GenerateToken(userId, expiredTime, scope);
+        var accessToken = GenerateToken(userId, role, expiredTime, scope);
 
         var tokenHandler = new JwtSecurityTokenHandler();
         string encodedToken = tokenHandler.WriteToken(accessToken);
@@ -98,8 +98,11 @@ public class JwtTokensService : IJwtTokensService
         return RedisKeyHelper.BuildKey("services", "chat_webapi", typeToken, userId);
     }
 
-
     private JwtSecurityToken GenerateToken(string userId, TimeSpan ttl, string? scope = null)
+    {
+        return GenerateToken(userId, null, ttl, scope);
+    }
+    private JwtSecurityToken GenerateToken(string userId, string role, TimeSpan ttl, string? scope = null)
     {
         DateTime now = DateTime.UtcNow;
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -107,7 +110,13 @@ public class JwtTokensService : IJwtTokensService
         var claims = new List<Claim>()
         {
             new Claim(CustomClaimTypes.UserId, userId),
+            
         };
+
+        if (!string.IsNullOrWhiteSpace(role))
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         if (scope != null)
         {

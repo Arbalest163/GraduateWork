@@ -2,7 +2,7 @@ import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { FormControl } from 'react-bootstrap';
 import chatClient from '../api/clients/chat-client';
 import './chat-component.css';
-import { ChatLookupDto, ChatsFilter, SearchField, ApiError } from '../api/models/models';
+import { ChatLookupDto, SearchField, ApiError, FilterContext, ChatListVm } from '../api/models/models';
 import { useNavigate } from 'react-router-dom';
 import ActionChatsComponent from '../components/action-chats-component';
 import MenuBurger from '../images/menu-burger';
@@ -10,40 +10,26 @@ import useModalContext from '../hooks/useModalContext';
 import ChatCreateComponent from './chat-create-component';
 import { ErrorModal } from '../modals/error-modal-component';
 import ChatItemInfoComponent from '../components/chat-item-info-component';
+import EditProfileComponent from '../components/edit-profile-component';
+import ChangePasswordComponent from '../components/change-password-component';
+import { getFilterContext, saveFilterContext, saveSelectedChat } from '../api/local-storage/local-storage';
+import ChatListComponent from '../components/chat-list-component';
 
 const ChatComponent: FC<{}> = (): ReactElement => {
   const {openModal} = useModalContext();
   const [chats, setChats] = useState<ChatLookupDto[] | undefined>(undefined);
-  const [selectedChat, setSelectedChat] = useState<ChatLookupDto | undefined>(undefined);
-  const [chatsFilter, setChatFilter] = useState<ChatsFilter>({searchInfo: { 
-    searchField: SearchField.Title, 
-    searchText: '', 
-  }});
+  const [selectedChatId, setSelectedChatId] = useState<string | undefined>(undefined);
+  const [filterContext, setChatFilter] = useState<FilterContext>(getFilterContext());
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    getChats();
-  }, [chatsFilter]);
-  
-  useEffect(() => {
-    getChats();
-  }, []);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      getChats();
-    }, 15000);
-
-    return () => clearInterval(intervalId);
-  }, []);
 
   const handleChangeFilter = (filterText: string) => {
     const filter = {
       searchInfo: { 
-        searchField: SearchField.Title, 
+        searchField: SearchField.Chats, 
         searchText: filterText, 
     }};
+    saveFilterContext(filter);
     setChatFilter(filter);
   };
 
@@ -51,8 +37,9 @@ const ChatComponent: FC<{}> = (): ReactElement => {
     openModal(ErrorModal(errorMessage));
   }
 
-  const getChats = () => {
-    chatClient.getChats(chatsFilter)
+  const getListChats = () => {
+    const filterContext = getFilterContext();
+    chatClient.getListChats(filterContext)
       .then((chatListVm) => {
         setChats(chatListVm.chats);
       })
@@ -65,13 +52,21 @@ const ChatComponent: FC<{}> = (): ReactElement => {
   }
 
   const handleCreateChat = () => {
-    openModal(<ChatCreateComponent/>);
+    openModal(<ChatCreateComponent updateChats={getListChats}/>);
+  }
+
+  const handleOpeningProfile = () => {
+    openModal(<EditProfileComponent/>);
+  }
+
+  const handleChangePassword = () => {
+    openModal(<ChangePasswordComponent/>);
   }
 
   const actionChatsButtons = [
-      {label: 'Создать чат', onClick: () => handleCreateChat()},
-      {label: 'Пункт меню', onClick: () => {}},
-      {label: 'Пункт меню', onClick: () => {}},
+      {label: 'Создать чат', onClick: handleCreateChat},
+      {label: 'Открыть профиль', onClick: handleOpeningProfile},
+      {label: 'Сменить пароль', onClick: handleChangePassword},
     ];
 
   return (
@@ -87,19 +82,11 @@ const ChatComponent: FC<{}> = (): ReactElement => {
           </div>
         </div>
         <div className='chats-bottom-container'>
-          <div>
-            {chats?.map((chat) => (
-              <div key={chat.id} 
-                className={`chat-item pointer-hover ${chat.id === selectedChat?.id ? 'selected' : ''}`} 
-                onClick={() => setSelectedChat(chat)}>
-                {chat.title}
-              </div>
-            ))}
-          </div>
+          <ChatListComponent chatId={selectedChatId} selectChat={setSelectedChatId} chats={chats} getListChats={getListChats} filterContext={filterContext}/>
         </div>
       </div>
       <div className="message-container">
-        {selectedChat && <ChatItemInfoComponent chatId={selectedChat.id}/>}
+        {selectedChatId && <ChatItemInfoComponent chatId={selectedChatId} updateChats={getListChats}/>}
       </div>
     </div>
   );

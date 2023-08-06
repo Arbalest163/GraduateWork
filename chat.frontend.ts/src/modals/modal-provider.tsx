@@ -1,4 +1,5 @@
 import { ReactElement, createContext, useState } from "react";
+import useValidationErrors from "../hooks/useValidationErrors";
 
 interface ModalContext {
     visible: boolean;
@@ -17,11 +18,13 @@ interface ModalContext {
   export const ModalProvider = ({children} : {children: JSX.Element}) => {
     const [visible, setVisible] = useState<boolean>(false);
     const [content, setContent] = useState<ReactElement | undefined>(undefined);
+    const { clearValidationError } = useValidationErrors();
     const openModal = (content: ReactElement) => {
         setContent(content);
         setVisible(true);
     }
     const closeModal = () => {
+        clearValidationError();
         setVisible(false);
     }
   

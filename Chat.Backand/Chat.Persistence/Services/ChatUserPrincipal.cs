@@ -1,4 +1,5 @@
-﻿using Chat.Application.Interfaces;
+﻿
+using Chat.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
@@ -23,7 +24,16 @@ public class ChatUserPrincipal : IChatUserPrincipal
         }
     }
 
-    public string NickName => throw new NotImplementedException();
+    public string NickName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(CustomClaimTypes.NickName) ?? string.Empty;
 
-    public string Role => throw new NotImplementedException();
+    public Domain.Role Role
+    {
+        get
+        {
+            var roleRaw = _httpContextAccessor.HttpContext?.User?
+               .FindFirstValue(ClaimTypes.Role);
+            Enum.TryParse(roleRaw, true, out Domain.Role role);
+            return role;
+        }
+    }
 }

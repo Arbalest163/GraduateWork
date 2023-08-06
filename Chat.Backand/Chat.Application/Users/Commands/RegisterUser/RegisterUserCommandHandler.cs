@@ -1,4 +1,6 @@
-﻿namespace Chat.Application.Users.Commands.RegisterUser;
+﻿using Chat.Application.Common;
+
+namespace Chat.Application.Users.Commands.RegisterUser;
 
 public class RegisterUserCommandHandler
  : IRequestHandler<RegisterUserCommand>
@@ -17,10 +19,6 @@ public class RegisterUserCommandHandler
     {
         try
         {
-            if(request.Password != request.ConfirmPassword)
-            {
-                throw new Exception("Пароли не совпадают.");
-            }
             var existUser = await _chatDbContext.Users.Where(u => u.UserName == request.Username || u.Nickname == request.Nickname).Select(u => new { u.UserName, u.Nickname }).FirstOrDefaultAsync();
             if (existUser != null)
             {
@@ -35,10 +33,6 @@ public class RegisterUserCommandHandler
             {
                 Id = Guid.NewGuid(),
                 UserName = request.Username.Trim(),
-                Firstname = request.Firstname.Trim(),
-                Lastname = request.Lastname.Trim(),
-                Middlename = request.Middlename.Trim(),
-                Birthday = request.Birthday.Value,
                 Nickname = request.Nickname.Trim(),
                 PasswordHash = passHash,
                 UserRole = userRole,

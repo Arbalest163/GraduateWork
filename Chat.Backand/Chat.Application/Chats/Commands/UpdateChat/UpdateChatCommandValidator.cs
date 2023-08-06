@@ -4,8 +4,6 @@ public class UpdateChatCommandValidator : AbstractValidator<UpdateChatCommand>
 {
     public UpdateChatCommandValidator()
     {
-        RuleFor(updateChatCommand => updateChatCommand.UserId)
-            .NotEqual(Guid.Empty);
         RuleFor(updateChatCommand => updateChatCommand.ChatId)
             .NotEqual(Guid.Empty);
         RuleFor(updateChatCommand => updateChatCommand.Title)

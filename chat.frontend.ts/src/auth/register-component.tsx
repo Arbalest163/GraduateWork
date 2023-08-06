@@ -14,11 +14,7 @@ const RegistrationComponent : FC<{}> = (): ReactElement => {
   const {openModal} = useModalContext();
   const [user, setUser] = useState<RegisterUserDto>({
     username: '',
-    firstname: '',
-    lastname: '',
-    middlename: '',
     nickname: '',
-    birthday: '',
     password: '',
     confirmPassword: '',
   });
@@ -28,15 +24,6 @@ const RegistrationComponent : FC<{}> = (): ReactElement => {
      isAnyValidationError,
      clearValidationError } = useValidationErrors();
 
-  const today = new Date();
-  const minDate = new Date(
-    today.getFullYear() - 14, 
-    today.getMonth(), 
-    today.getDate()
-  );
-
-  const [birthday, setBirthday] = useState<Date>(minDate);
-  const [isCalendarActive, setIsCalendarActive] = useState(false);
 
   const navigate = useNavigate();
 
@@ -50,31 +37,6 @@ const RegistrationComponent : FC<{}> = (): ReactElement => {
     }));
     clearValidationError(name);
   };
-
-  const setDate = (date: Date) => {
-    if(date > minDate){
-      openModal(ErrorModal("Вам должно быть больше 14 лет!"));
-      return;
-    }
-    setBirthday(date);
-    user.birthday = date.toLocaleDateString();
-    closeCalendar();
-  }
-
-  const openCalendar = () => {
-    setIsCalendarActive(true);
-  }
-
-  const closeCalendar = () => {
-    setTimeout(() => {
-      setIsCalendarActive(false);
-    }, 100);
-  }
-
-  const onClickToDate = () => {
-    clearValidationError('birthday');
-    setIsCalendarActive(!isCalendarActive);
-  }
 
   const handleRegistration = () => {
     setDisabledButton(true);
@@ -139,86 +101,6 @@ const RegistrationComponent : FC<{}> = (): ReactElement => {
             maxLength={20}
             onChange={handleInputChange}
           />
-        </div>
-        <div className='container-input'>
-          {
-            isAnyValidationError('firstname') 
-            && <div className='error-container'>
-                {validationErrors.map(err => stringEquals(err.propertyName, 'firstname') 
-                  && <div key={err.errorMessage} className="error-message">{err.errorMessage}</div>)}
-               </div>
-          } 
-          <input
-            className={`input ${isAnyValidationError('firstname') ? 'error' : ''}`}
-            type="text"
-            id="firstname"
-            name="firstname"
-            placeholder="Имя"
-            value={user.firstname}
-            maxLength={20}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className='container-input'>
-          {
-            isAnyValidationError('lastname') 
-            && <div className='error-container'>
-                {validationErrors.map(err => stringEquals(err.propertyName, 'lastname') 
-                  && <div key={err.errorMessage} className="error-message">{err.errorMessage}</div>)}
-               </div>
-          } 
-          <input
-            className={`input ${isAnyValidationError('lastname') ? 'error' : ''}`}
-            type="text"
-            id="lastname"
-            name="lastname"
-            placeholder="Фамилия"
-            value={user.lastname}
-            maxLength={20}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className='container-input'>
-        {
-            isAnyValidationError('middlename') 
-            && <div className='error-container'>
-                {validationErrors.map(err => stringEquals(err.propertyName, 'middlename') 
-                  && <div key={err.errorMessage} className="error-message">{err.errorMessage}</div>)}
-               </div>
-          } 
-          <input
-            className={`input ${isAnyValidationError('middlename') ? 'error' : ''}`}
-            type="text"
-            id="middlename"
-            name="middlename"
-            placeholder="Отчество"
-            value={user.middlename}
-            maxLength={20}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="container-input">
-        {
-            isAnyValidationError('birthday') 
-            && <div className='error-container'>
-                {validationErrors.map(err => stringEquals(err.propertyName, 'birthday') 
-                  && <div key={err.errorMessage} className="error-message">{err.errorMessage}</div>)}
-               </div>
-          } 
-          <input
-            className={`input ${isAnyValidationError('birthday') ? 'error' : ''}`}
-            type="text"
-            id="birthday"
-            name="birthday"
-            placeholder="Дата рождения"
-            value={user.birthday || ''}
-            onClick={onClickToDate}
-          />
-        </div>
-        <div className='container-date'>
-        {isCalendarActive &&
-              <Calendar date={birthday} onChange={setDate} />
-          }
         </div>
         <div className='container-input'>
         {

@@ -1,4 +1,4 @@
-import { CurrentUser } from "../models/models";
+import { CurrentUser, FilterContext, SearchField } from "../models/models";
 
 export const saveToken = (token: string | null | undefined) => {
     localStorage.setItem('token', token ? token : '');
@@ -41,4 +41,31 @@ export const getCurrentUserLocalStorage = () : CurrentUser | null => {
         return currentUser;
     }
     return null;
+}
+
+export const saveSelectedChat = (chatId: string | undefined) => {
+    localStorage.setItem('selectedChatId', chatId ? chatId : '');
+}
+
+export const getSelectedChat = () => {
+    return localStorage.getItem('selectedChatId') ?? undefined
+}
+
+export const getFilterContext = () : FilterContext => {
+    const filterContext = localStorage.getItem('filterContext');
+    
+    if(filterContext){
+        return JSON.parse(filterContext);
+    } else {
+        const filterContextDefault = {searchInfo: { 
+            searchField: SearchField.Chats, 
+            searchText: '', 
+        }};
+        return filterContextDefault;
+    }
+}
+
+export const saveFilterContext = (filterContext: FilterContext) => {
+    const filter = JSON.stringify(filterContext);
+    localStorage.setItem('filterContext', filter);
 }

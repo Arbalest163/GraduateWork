@@ -10,7 +10,7 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
     {
         builder.HasKey(message => message.Id);
         builder.HasIndex(message => message.Id).IsUnique();
-        builder.Property(message => message.Text).HasMaxLength(500).IsRequired();
+        builder.Property(message => message.Text).HasMaxLength(1500).IsRequired();
         builder.Property(message => message.DateSendMessage).IsRequired();
 
         builder.HasOne(message => message.Chat)

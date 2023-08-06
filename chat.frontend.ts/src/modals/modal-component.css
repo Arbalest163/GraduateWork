@@ -9,13 +9,15 @@
     flex-direction: column;
     justify-content: center;
     background: rgba(0, 0, 0, 0.2);
+    z-index: 10;
 }
 
 .popup {
     background: #ffffff;
     border-radius: 20px;
     padding: 10px;
-    height: calc(150px + 2vmin);
+    height: auto;
+    min-height: calc(150px + 2vmin);
     width: 300px;
     display: flex;
     flex-direction: column;

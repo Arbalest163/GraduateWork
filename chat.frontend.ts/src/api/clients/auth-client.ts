@@ -1,5 +1,5 @@
 import { getRefreshToken } from "../local-storage/local-storage";
-import { AuthQuery, CurrentUser, RegisterUserDto, Token } from "../models/models";
+import { AuthQuery, ChangePasswordDto, CurrentUser, EditUserDto, RegisterUserDto, Token } from "../models/models";
 import { ClientBase } from "./client-base";
 
 const apiVersion = '1.0';
@@ -16,6 +16,21 @@ export class AuthClient extends ClientBase {
 
     register(body: RegisterUserDto) : Promise<void> {
       return this.$http.post("auth/register", body)
+        .then(this.handleResponse, this.handleError);
+    }
+
+    getEdit() : Promise<EditUserDto> {
+      return this.$http.get("auth/edit")
+        .then(this.handleResponse, this.handleError);
+    }
+
+    edit(body: EditUserDto) : Promise<void> {
+      return this.$http.put("auth/edit", body)
+        .then(this.handleResponse, this.handleError);
+    }
+
+    changePassword(body: ChangePasswordDto) : Promise<void> {
+      return this.$http.put("auth/change-password", body)
         .then(this.handleResponse, this.handleError);
     }
 

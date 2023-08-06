@@ -7,7 +7,11 @@ import useValidationErrors from "../hooks/useValidationErrors";
 import { stringEquals } from "../api/common/common-components";
 import { ErrorModal } from "../modals/error-modal-component";
 
-const ChatCreateComponent : FC<{}> = () : ReactElement => {
+interface ChatCreateProps {
+    updateChats: () => void;
+}
+
+const ChatCreateComponent : FC<ChatCreateProps> = ({updateChats}) : ReactElement => {
     const {closeModal} = useModalContext();
     const [chatTitle, setChatTitle] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
@@ -26,6 +30,7 @@ const ChatCreateComponent : FC<{}> = () : ReactElement => {
     const createChat = () => {
         chatClient.createChat({title: chatTitle})
             .then(() => {
+                updateChats();
                 closeModal();
             })
             .catch((error: ApiError) => {

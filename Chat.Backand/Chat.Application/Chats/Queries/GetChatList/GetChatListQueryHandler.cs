@@ -1,4 +1,5 @@
 ﻿using AutoMapper.QueryableExtensions;
+using Chat.Application.Common;
 
 namespace Chat.Application.Chats.Queries.GetChatList;
 
@@ -7,27 +8,34 @@ public class GetChatListQueryHandler
 {
     private readonly IChatDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IChatUserPrincipal _currentUser;
 
     public GetChatListQueryHandler(IChatDbContext dbContext,
-        IMapper mapper) =>
-        (_dbContext, _mapper) = (dbContext, mapper);
+        IMapper mapper,
+        IChatUserPrincipal currentUser)
+    {
+        (_dbContext, _mapper, _currentUser) = (dbContext, mapper, currentUser);
+    }
 
     public async Task<ChatListVm> Handle(GetChatListQuery request,
         CancellationToken cancellationToken)
     {
-        var query = _dbContext.Chats.AsQueryable();
-        if (request.UserId != Guid.Empty)
+        var filter = request.Filter;
+        var query = _dbContext.Chats.Include(x => x.User).AsQueryable();
+        if (filter.UserId != Guid.Empty)
         {
-            query = query.Where(c => c.User.Id == request.UserId);
+            query = query.Where(c => c.User.Id == filter.UserId);
         }
 
-        ApplySearchFilters(ref query, request.SearchInfo);
-        ApplyOrder(ref query, request.OrderInfo);
+        ApplySearchFilters(ref query, filter.SearchInfo);
+        ApplyOrder(ref query, filter.OrderInfo);
 
         var chats = await query
                 .Where(chat => chat.IsActive == true)
                 .ProjectTo<ChatLookupDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
+
+        chats.ForEach(c => c.IsCreatorChat = c.UserId == _currentUser.UserId);
 
         return new ChatListVm { Chats = chats };
     }
@@ -43,8 +51,7 @@ public class GetChatListQueryHandler
             {
                 SearchField.Users => query.Where(c => c.User.Nickname.Contains(searchText)),
                 SearchField.Messages => query.Where(c => c.Messages.Any(m => m.Text.Contains(searchText))),
-                SearchField.Title => query.Where(c => c.Title.Contains(searchText)),
-                SearchField.DateCreateChat => dateCreatedChat != null ? query.Where(c => c.DateCreateChat == dateCreatedChat) : query,
+                SearchField.Chats => query.Where(c => c.Title.Contains(searchText)),
                 _ => query.Where(c => c.User.Nickname.Contains(searchText)),
             };
         }

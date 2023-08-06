@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosHeaders, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import mem from "mem";
 import { deleteTokens, getRefreshToken, getToken, saveRefreshToken, saveToken } from '../local-storage/local-storage';
 import { Token } from '../models/models';
@@ -65,6 +65,22 @@ export class $AxiosHttpRequest {
     const content = JSON.stringify(body ??= {});
     const fullUrl = this.buildUrl(url, queryParams);
     return this.axiosInstance.post(fullUrl, content);
+  }
+
+  postForm(url: string, formData: FormData) : Promise<AxiosResponse> {
+    const config : AxiosRequestConfig<FormData> =  { headers: {
+      "Content-Type": "multipart/form-data",
+      Accept: 'application/json',
+    }};
+    return this.axiosInstance.postForm(url, formData, config);
+  }
+
+  putForm(url: string, formData: FormData) : Promise<AxiosResponse> {
+    const config : AxiosRequestConfig<FormData> =  { headers: {
+      "Content-Type": "multipart/form-data",
+      Accept: 'application/json',
+    }};
+    return this.axiosInstance.putForm(url, formData, config);
   }
 
   delete(url: string, queryParams?: Record<string, any>): Promise<AxiosResponse> {

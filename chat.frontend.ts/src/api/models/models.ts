@@ -10,12 +10,25 @@ export interface ChatListVm {
 export interface ChatLookupDto {
     id: string;
     title: string;
+    isCreatorChat: boolean;
+}
+
+export interface MessageGroupsVm {
+    messageGroups: MessageGroupDto[];
+}
+
+export interface MessageGroupDto {
+    date: string;
+    messages: ChatMessageDto[]
 }
 
 export interface ChatMessageDto {
+    id: string;
     text: string;
     user: ChatUserDto;
-    dateSendMessage: string;
+    timeSendMessage: string;
+    isCreatorMessage: boolean;
+    hasRightToEdit: boolean;
 }
 
 export interface UserBase {
@@ -27,14 +40,22 @@ export interface CurrentUser extends UserBase {
 }
 
 export interface ChatUserDto extends UserBase {
+    avatar: string;
 }
 
 export interface ChatVm {
     id: string;
     title: string;
-    messages: ChatMessageDto[];
+    groupMessages: MessageGroupDto[];
     users: ChatUserDto[];
     dateCreateChat: Date;
+    isCreatorChat: boolean;
+    hasRightToEdit: boolean;
+}
+
+export interface ChatInfoVm {
+    title: string;
+    hasRightToEdit: boolean;
 }
 
 export interface CreateChatDto {
@@ -70,11 +91,20 @@ export interface ProblemDetails {
 
 export interface RegisterUserDto {
     username: string;
+    nickname: string;
+    password: string;
+    confirmPassword: string;
+}
+
+export interface EditUserDto {
+    avatar: string;
     firstname: string;
     lastname: string;
     middlename?: string;
-    nickname: string;
     birthday: string;
+}
+
+export interface ChangePasswordDto {
     password: string;
     confirmPassword: string;
 }
@@ -82,8 +112,7 @@ export interface RegisterUserDto {
 export enum SearchField {
     Users = "Users",
     Messages = "Messages",
-    DateCreateChat = "DateCreateChat",
-    Title = "Title",
+    Chats = "Chats",
 }
 
 export interface Token {
@@ -99,7 +128,7 @@ export interface UpdateChatDto {
     addUser?: string;
 }
 
-export interface ChatsFilter {
+export interface FilterContext {
     userId?: string;
     orderInfo?: OrderInfo,
     searchInfo?: SearchInfo,
@@ -113,7 +142,6 @@ export interface OrderInfo {
 export interface SearchInfo {
     searchField?: SearchField,
     searchText?: string,
-    dateCreateChat? : Date,
 }
 
 export interface ApiError {

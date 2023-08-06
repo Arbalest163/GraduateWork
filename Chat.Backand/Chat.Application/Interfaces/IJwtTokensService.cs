@@ -2,7 +2,7 @@
 
 public interface IJwtTokensService
 {
-    (string, TimeSpan) GenerateAccessToken(string userId);
+    (string, TimeSpan) GenerateAccessToken(string userId, string role);
      string GenerateRefreshToken(string userId);
     Task DeleteJwtToken(string userId);
     Task ValidateRefreshToken(string refreshToken);

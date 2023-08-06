@@ -19,7 +19,7 @@ public class LoginUserCommandHandler
     public async Task<Token> Handle(LoginUserCommand request,
         CancellationToken cancellationToken)
     {
-        var user = await _chatDbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.Login);
+        var user = await _chatDbContext.Users.Include(x => x.UserRole).FirstOrDefaultAsync(u => u.UserName == request.Login);
         if (user is null)
         {
             throw new NotFoundException($"Пользователь с логином {request.Login} не найден!");
@@ -31,7 +31,7 @@ public class LoginUserCommandHandler
             throw new UnauthorizedAccessException("Не правильный логин или пароль!");
         }
 
-        var (accessToken, expireTime) = _jwtTokensService.GenerateAccessToken(user.Id.ToString());
+        var (accessToken, expireTime) = _jwtTokensService.GenerateAccessToken(user.Id.ToString(), user.UserRole.Role.ToString());
         var refreshToken = _jwtTokensService.GenerateRefreshToken(user.Id.ToString());
 
         var token = new Token

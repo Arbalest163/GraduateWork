@@ -8,6 +8,9 @@ using System.ComponentModel.DataAnnotations;
 using Chat.Application.Users.Commands.RefreshTokenUser;
 using Microsoft.AspNetCore.Authorization;
 using Chat.Application.Users.Queries.GetUser;
+using Chat.Application.Users.Commands.EditUser;
+using Chat.Application.Users.Queries.GetEditUser;
+using Chat.Application.Users.Commands.ChangePassword;
 
 namespace Chat.WebApi.Controllers;
 
@@ -81,6 +84,61 @@ public class AuthController : BaseController
     public async Task<IActionResult> Register([FromBody] RegisterUserDto createUserDto)
     {
         var command = _mapper.Map<RegisterUserCommand>(createUserDto);
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    /// <summary>
+    /// Редактирование пользователя
+    /// </summary>
+    /// <response code="200">Успешно</response>
+    [Authorize]
+    [HttpGet]
+    [Route("edit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<EditUserVm>> Edit()
+    {
+        var command = new GetEditUserQuery
+        { 
+            Id = UserPrincipal.UserId,
+        };
+        var editUser = await Mediator.Send(command);
+        return Ok(editUser);
+    }
+
+    /// <summary>
+    /// Редактирование пользователя
+    /// </summary>
+    /// <param name="editUserDto">RegisterUserDto object</param>
+    /// <response code="200">Успешно</response>
+    [Authorize]
+    [HttpPut]
+    [Route("edit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Edit([FromBody] EditUserDto editUserDto)
+    {
+        var command = _mapper.Map<EditUserCommand>(editUserDto);
+        command.UserId = UserPrincipal.UserId;
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    /// <summary>
+    /// Смена пароля
+    /// </summary>
+    /// <param name="changePasswordDto">RegisterUserDto object</param>
+    /// <response code="200">Успешно</response>
+    [Authorize]
+    [HttpPut]
+    [Route("change-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Edit([FromBody] ChangePasswordDto changePasswordDto)
+    {
+        var command = _mapper.Map<ChangePasswordCommand>(changePasswordDto);
+        command.UserId = UserPrincipal.UserId;
         await Mediator.Send(command);
         return Ok();
     }

@@ -29,6 +29,7 @@ public static class DependencyInjection
         services.AddSingleton<IChatUserPrincipal, ChatUserPrincipal>();
         services.AddTransient<IPasswordManager, PasswordManager>();
         services.AddScoped<IJwtTokensService, JwtTokensService>();
+        services.AddScoped<IFileManager, FileManager>();
 
         return services;
     }

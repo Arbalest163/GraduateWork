@@ -1,4 +1,4 @@
-import { ChatsFilter, ChatListVm, ChatVm, CreateChatDto, UpdateChatDto, CreateMessageDto } from "../models/models";
+import { FilterContext, ChatListVm, ChatVm, CreateChatDto, UpdateChatDto, CreateMessageDto, ChatInfoVm, MessageGroupsVm } from "../models/models";
 import { ClientBase } from "./client-base";
 
 const apiVersion = '1.0';
@@ -8,13 +8,18 @@ export class ChatClient extends ClientBase {
       super(api_version);
     }
 
-    getChats(chatsFilter: ChatsFilter): Promise<ChatListVm> {
-        return this.$http.get("chats", chatsFilter)
+    getListChats(filterContext: FilterContext): Promise<ChatListVm> {
+        return this.$http.get("chat/list", filterContext)
             .then(this.handleResponse, this.handleError);
     }
 
     getChat(chatId: string): Promise<ChatVm> {
         return this.$http.get("chat", { chatId: chatId })
+            .then(this.handleResponse, this.handleError);
+    }
+
+    getChatInfo(chatId: string): Promise<ChatInfoVm> {
+        return this.$http.get("chat/info", { chatId: chatId })
             .then(this.handleResponse, this.handleError);
     }
 
@@ -36,6 +41,21 @@ export class ChatClient extends ClientBase {
     createMessage(body: CreateMessageDto): Promise<string> {
         return this.$http.post("chat/message", body)
             .then(this.handleResponse, this.handleError);
+    }
+
+    getMessageGroups(chatId: string) : Promise<MessageGroupsVm> {
+        return this.$http.get("chat/message-groups", { chatId: chatId })
+            .then(this.handleResponse, this.handleError);
+    }
+
+    deleteMessage(messageId: string) : Promise<void> {
+        return this.$http.delete("chat/message", { messageId: messageId })
+            .then(this.handleResponse, this.handleError);
+    }
+
+    uploadFile(formData: FormData) : Promise<string> {
+        return this.$http.postForm("chat/upload-file", formData)
+        .then(this.handleResponse, this.handleError);
     }
 };
 
