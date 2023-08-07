@@ -72,7 +72,6 @@ public class ChatController : BaseController
         var query = new GetChatQuery 
         { 
             ChatId = ChatId,
-            UserId = UserPrincipal.UserId,
         };
         var vm = await Mediator.Send(query);
         return Ok(vm);
@@ -125,7 +124,6 @@ public class ChatController : BaseController
     public async Task<ActionResult<Guid>> CreateChat([FromBody] CreateChatDto createChatDto)
     {
         var command = _mapper.Map<CreateChatCommand>(createChatDto);
-        command.UserId = UserPrincipal.UserId;
         var chatId = await Mediator.Send(command);
         return Ok(chatId);
     }

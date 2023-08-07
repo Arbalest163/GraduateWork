@@ -6,7 +6,5 @@ public class CreateChatCommandValidator : AbstractValidator<CreateChatCommand>
     {
         RuleFor(createChatCommand =>
             createChatCommand.Title).NotEmpty().Length(3, 20).WithName("Название чата");
-        RuleFor(createChatCommand =>
-            createChatCommand.UserId).NotEqual(Guid.Empty);
     }
 }

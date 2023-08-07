@@ -31,10 +31,6 @@ public class GetChatQueryHandler
             throw new NotFoundException(nameof(Domain.Chat), request.ChatId);
         }
 
-        //var user = await _dbContext.Users.Include(x => x.UserRole).FirstAsync(u => u.Id == request.UserId, cancellationToken);
-
-        //chat.Messages = chat.Messages.OrderByDescending(x => x.DateSendMessage).ToList();
-
         foreach(var message in chat.Messages)
         {
             message.IsCreatorMessage = message.User.Id == _userPrincipal.UserId;

@@ -28,8 +28,7 @@ const ChatHeaderInfoComponent: FC<ChatHeaderInfoProps> = ({chatId, updateChats})
 
     const getDefaultButtons = () => {
         return [
-            {label: 'Пункт меню', onClick: () => {}},
-            {label: 'Пункт меню', onClick: () => {}},
+            {label: 'Информация о чате', onClick: () => {}},
           ];
     }
 
