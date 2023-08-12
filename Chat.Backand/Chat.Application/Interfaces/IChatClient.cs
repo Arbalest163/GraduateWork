@@ -7,4 +7,5 @@ public interface IChatClient
     Task ReceiveMessage(ReceiveMessage message);
     Task JoinChatGroup(string chatId);
     Task LeaveChatGroup(string chatId);
+    Task OnChatCountChange();
 }

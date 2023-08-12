@@ -1,4 +1,6 @@
 ﻿using Chat.Application.Common.Exceptions;
+using Chat.Application.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Chat.Application.Chats.Commands.DeleteCommand;
 
@@ -7,11 +9,13 @@ public class DeleteChatCommandHandler
 {
     private readonly IChatDbContext _dbContext;
     private readonly IChatUserPrincipal _userPrincipal;
+    private readonly IHubContext<ChatHub, IChatClient> _hubContext;
 
-    public DeleteChatCommandHandler(IChatDbContext dbContext, IChatUserPrincipal userPrincipal)
+    public DeleteChatCommandHandler(IChatDbContext dbContext, IChatUserPrincipal userPrincipal, IHubContext<ChatHub, IChatClient> hubContext)
     {
         _dbContext = dbContext;
         _userPrincipal = userPrincipal;
+        _hubContext = hubContext;
     }
 
     public async Task Handle(DeleteChatCommand request,
@@ -31,6 +35,7 @@ public class DeleteChatCommandHandler
         {
             _dbContext.Chats.Remove(chat);
             await _dbContext.SaveChangesAsync(cancellationToken);
+            await _hubContext.Clients.All.OnChatCountChange();
         }
     }
 }

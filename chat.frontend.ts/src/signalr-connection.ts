@@ -20,7 +20,7 @@ class Connector {
             });
         }
         this.onChatCountChangeEvent = (onChatCountChange) => {
-            this.connection.on("ChatCountChange", () => {
+            this.connection.on("OnChatCountChange", () => {
                 onChatCountChange();
             });
         }

@@ -8,11 +8,7 @@ import { stringEquals } from "../api/common/common-components";
 import { ErrorModal } from "../modals/error-modal-component";
 import ChangeImageComponent from "../components/change-image-component";
 
-interface ChatCreateProps {
-    updateChats: () => void;
-}
-
-const ChatCreateComponent : FC<ChatCreateProps> = ({updateChats}) : ReactElement => {
+const ChatCreateComponent : FC<{}> = () : ReactElement => {
     const {closeModal} = useModalContext();
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const {openModal} = useModalContext();
@@ -31,7 +27,6 @@ const ChatCreateComponent : FC<ChatCreateProps> = ({updateChats}) : ReactElement
     const createChat = () => {
         chatClient.createChat(createChatDto)
             .then(() => {
-                updateChats();
                 closeModal();
             })
             .catch((error: ApiError) => {

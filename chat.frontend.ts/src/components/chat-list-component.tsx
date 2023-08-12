@@ -1,29 +1,15 @@
-import { FC, ReactElement, useEffect, useState } from "react";
-import { ChatLookupDto, FilterContext } from "../api/models/models";
+import { FC, ReactElement } from "react";
+import { ChatLookupDto } from "../api/models/models";
 import useSelectedChatContext from "../hooks/useSelectedChatContext";
 import Connector from '../signalr-connection';
 
 interface ChatListProps {
-    chats: ChatLookupDto[] | undefined;
-    getListChats: () => void;
-    filterContext: FilterContext;
+    chats: ChatLookupDto[];
 }
 
-const ChatListComponent : FC<ChatListProps> = ({chats, getListChats, filterContext}) : ReactElement => {
+const ChatListComponent : FC<ChatListProps> = ({chats}) : ReactElement => {
     const {selectedChatId, setSelectedChatId} = useSelectedChatContext();
     const {joinChatGroup, leaveChatGroup} = Connector();
-
-    useEffect(() => {
-        getListChats();
-    }, [filterContext]);
-    
-    useEffect(() => {
-    const intervalId = setInterval(() => {
-        getListChats();
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-    }, []);
 
     const handleSelectedChat = (chatId: string) => {
         if(selectedChatId && selectedChatId !== chatId) {
@@ -34,7 +20,6 @@ const ChatListComponent : FC<ChatListProps> = ({chats, getListChats, filterConte
             joinChatGroup(chatId);
         }
     }
-
     return (
         <div>
             {chats?.map((chat) => (

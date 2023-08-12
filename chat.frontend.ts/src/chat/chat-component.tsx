@@ -12,15 +12,17 @@ import { ErrorModal } from '../modals/error-modal-component';
 import ChatItemInfoComponent from '../components/chat-item-info-component';
 import EditProfileComponent from '../components/edit-profile-component';
 import ChangePasswordComponent from '../components/change-password-component';
-import { getFilterContext, getToken, saveFilterContext, saveSelectedChat } from '../api/local-storage/local-storage';
+import { getFilterContext, saveFilterContext } from '../api/local-storage/local-storage';
 import ChatListComponent from '../components/chat-list-component';
 import useAuthContext from '../hooks/useAuthContext';
 import { SelectedChatContextProvider } from './selected-chat-provider';
+import Connector from '../signalr-connection';
 
 const ChatComponent: FC<{}> = (): ReactElement => {
   const { currentUser } = useAuthContext();
   const {openModal} = useModalContext();
-  const [chats, setChats] = useState<ChatLookupDto[] | undefined>(undefined);
+  const {onChatCountChangeEvent} = Connector();
+  const [chats, setChats] = useState<ChatLookupDto[]>([]);
   const [filterContext, setChatFilter] = useState<FilterContext>(getFilterContext());
 
   const navigate = useNavigate();
@@ -51,10 +53,19 @@ const ChatComponent: FC<{}> = (): ReactElement => {
         }
         navigate('/auth/login');
       });
+      console.log('Chat list updated');
   }
 
+  useEffect(() => {
+    onChatCountChangeEvent(getListChats);
+  }, []);
+
+  useEffect(() => {
+    getListChats();
+  }, [filterContext]);
+
   const handleCreateChat = () => {
-    openModal(<ChatCreateComponent updateChats={getListChats}/>);
+    openModal(<ChatCreateComponent/>);
   }
 
   const handleOpeningProfile = () => {
@@ -85,7 +96,7 @@ const ChatComponent: FC<{}> = (): ReactElement => {
             </div>
           </div>
           <div className='chats-bottom-container'>
-            <ChatListComponent chats={chats} getListChats={getListChats} filterContext={filterContext}/>
+            <ChatListComponent chats={chats}/>
           </div>
         </div>
         <div className="message-container">
