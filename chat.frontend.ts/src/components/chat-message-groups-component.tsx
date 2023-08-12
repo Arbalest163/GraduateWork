@@ -3,18 +3,23 @@ import chatClient from "../api/clients/chat-client";
 import DownArrowButton from "../images/down-arrow";
 import useModalContext from "../hooks/useModalContext";
 import { ErrorModal } from "../modals/error-modal-component";
-import { ApiError, MessageGroupDto } from "../api/models/models";
+import { ApiError, ChatMessageDto, MessageGroupDto, ReceiveMessage, Role } from "../api/models/models";
 import DeleteButton from "../images/delete-button";
+import useAuthContext from "../hooks/useAuthContext";
+import Connector from '../signalr-connection'
+import mem from "mem";
 
 interface ChatMessageGroupsProps {
     chatId: string;
 }
 
 const ChatMessageGroupsComponent : FC<ChatMessageGroupsProps> = ({chatId}) : ReactElement => {
+    const { onMessageReceivedEvent } = Connector();
     const {openModal} = useModalContext();
+    const { currentUser } = useAuthContext();
     const [showScrollToDownButton, setShowScrollToDownButton] = useState(false);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
-    const [messageGroups, setMessageGroups] = useState<MessageGroupDto[] | undefined>(undefined);
+    const [messageGroups, setMessageGroups] = useState<MessageGroupDto[]>([]);
     
     let isAtBottom = false;
 
@@ -24,18 +29,51 @@ const ChatMessageGroupsComponent : FC<ChatMessageGroupsProps> = ({chatId}) : Rea
 
     const getChatMessageGroups = () => {
         chatClient.getMessageGroups(chatId)
-            .then((messageGroups) => {
-                setMessageGroups(messageGroups.messageGroups);
+            .then((response) => {
+                setMessageGroups(response.messageGroups);
                 if(isAtBottom) {
                     handleScrollToDownClick();
                 }
             })
             .catch((error: ApiError) => {
-                if(error?.message){
+                if(error?.message) {
                     openErrorModal(error.message);
                 }
             });
     }
+
+    const onMessageReceived = (message: ReceiveMessage) : Promise<void> => {
+        const chatMessage: ChatMessageDto = {
+            id: message.id,
+            text:  message.text,
+            user: message.user,
+            timeSendMessage: message.timeSendMessage,
+            isCreatorMessage: message.user.id === currentUser?.id,
+            hasRightToEdit: message.user.id === currentUser?.id || currentUser?.role === Role.Admin,
+        }
+
+        setMessageGroups(prevMessageGroups => {
+            const updatedMessageGroups = prevMessageGroups?.map(group => {
+                if (group.date === message.date) {
+                    return {
+                        ...group,
+                        messages: group.messages ? [...group.messages, chatMessage] : [chatMessage],
+                    };
+                }
+                return group;
+            });
+            return updatedMessageGroups;
+        });
+        
+        console.log(message);
+        return Promise.resolve();
+    }
+
+    const memoizedOnMessageRecieved = mem(onMessageReceived, {maxAge: 10000})
+
+    useEffect(() => {
+        onMessageReceivedEvent(memoizedOnMessageRecieved);
+    }, [])
 
     useEffect(() => {
         getChatMessageGroups();
@@ -66,17 +104,6 @@ const ChatMessageGroupsComponent : FC<ChatMessageGroupsProps> = ({chatId}) : Rea
             messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
     };
-
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            getChatMessageGroups();
-        }, 300);
-
-        return () => clearInterval(intervalId);
-    }, [chatId]);
-
-    
 
     const deleteMessage = (chatId: string) => {
         chatClient.deleteMessage(chatId).then(() => {

@@ -1,10 +1,12 @@
-﻿using Chat.Application.Common.Mappings;
+﻿using Chat.Application.Common;
+using Chat.Application.Common.Mappings;
 namespace Chat.Application.Chats.Queries.GetChatList;
 
 public class ChatLookupDto : IMapWith<Domain.Chat>
 {
     public Guid Id { get; set; }
     public string Title { get; set; }
+    public string ChatLogo { get; set; }
     public Guid UserId { get; set; }
     public bool IsCreatorChat { get; set; }
 
@@ -17,6 +19,8 @@ public class ChatLookupDto : IMapWith<Domain.Chat>
                 opt => opt.MapFrom(chat => chat.Title))
             .ForMember(chatDto => chatDto.UserId,
                 opt => opt.MapFrom(chat => chat.User.Id))
+            .ForMember(chatDto => chatDto.ChatLogo,
+                opt => opt.MapFrom(chat => Converter.CreateBase64File(chat.ChatLogo)))
         ;
     }
 }

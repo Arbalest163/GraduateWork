@@ -6,6 +6,10 @@ public class Chat : Entity
     /// </summary>
     public string Title { get; set; }
     /// <summary>
+    /// Логотип чата
+    /// </summary>
+    public string ChatLogo { get; set; }
+    /// <summary>
     /// Пользователь, создавший чат
     /// </summary>
     public virtual User User { get; set; }

@@ -1,4 +1,4 @@
-import { FilterContext, ChatListVm, ChatVm, CreateChatDto, UpdateChatDto, CreateMessageDto, ChatInfoVm, MessageGroupsVm } from "../models/models";
+import { FilterContext, ChatListVm, ChatVm, CreateChatDto, UpdateChatDto, CreateMessageDto, ChatInfoVm, MessageGroupsVm, EditChatVm } from "../models/models";
 import { ClientBase } from "./client-base";
 
 const apiVersion = '1.0';
@@ -25,6 +25,11 @@ export class ChatClient extends ClientBase {
 
     createChat(body: CreateChatDto): Promise<string> {
         return this.$http.post("chat", body)
+            .then(this.handleResponse, this.handleError);
+    }
+
+    editChat(chatId: string) : Promise<EditChatVm> {
+        return this.$http.get("chat/edit", { chatId: chatId })
             .then(this.handleResponse, this.handleError);
     }
 

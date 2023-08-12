@@ -95,6 +95,7 @@ public class Converter
             ".jpg" => "data:image/jpg;base64,",
             ".jpeg" => "data:image/jpeg;base64,",
             ".png" => "data:image/png;base64,",
+            _ => throw new NotImplementedException()
         };
     }
 
@@ -105,6 +106,7 @@ public class Converter
             "data:image/jpg;base64," => ".jpg",
             "data:image/jpeg;base64," => ".jpeg",
             "data:image/png;base64," => ".png",
+            _ => throw new NotImplementedException()
         };
     }
 }

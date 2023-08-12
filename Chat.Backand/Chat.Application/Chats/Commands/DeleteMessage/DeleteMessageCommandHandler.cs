@@ -15,7 +15,8 @@ public class DeleteMessageCommandHandler
     public async Task Handle(DeleteMessageCommand request, CancellationToken cancellationToken)
     {
         var message = await _chatDbContext.Messages
-                .FirstOrDefaultAsync(x => x.Id == request.MessageId);
+            .Include(m => m.User)
+            .FirstAsync(x => x.Id == request.MessageId);
 
         if(message.User.Id == _userPrincipal.UserId || _userPrincipal.Role == Role.Admin)
         {

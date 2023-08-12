@@ -11,6 +11,8 @@ using System.Reflection;
 using Newtonsoft.Json.Converters;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Newtonsoft.Json.Serialization;
+using Chat.Application.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,10 +60,11 @@ void RegisterServices(IServiceCollection services)
         options.AddPolicy(name: CorsPolicy, policy =>
         {
             policy
-                //.WithOrigins("https://chatapp.noragami.keenetic.link", "http://chatapp.noragami.keenetic.link", "http://192.168.2.114", "https://192.168.2.114:5163")
-                .AllowAnyOrigin()
+                //.WithOrigins("https://chatapp.noragami.keenetic.link", "http://chatapp.noragami.keenetic.link", "http://192.168.2.114", "https://192.168.2.114:5163", "http://localhost:3000")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
+                .SetIsOriginAllowed(origin => true)
+                .AllowCredentials()
                 ;
         });
     });
@@ -112,6 +115,13 @@ async Task Configure(WebApplication app)
     app.UseAuthorization();
     
     app.MapControllers();
+    app.MapHub<ChatHub>("/chat-hub");
+    //var chatsContext = scope.ServiceProvider.GetRequiredService<IHubContext<ChatHub, IChatClient>>();
+    //var chatIds = context.Chats.Select(x => x.Id.ToString()).ToArray();
+    //foreach (var chatId in chatIds)
+    //{
+    //    await chatsContext.Groups.AddToGroupAsync("", chatId);
+    //}
 }
 
 void ConfigureAuthentication(IServiceCollection services)
@@ -122,5 +132,21 @@ void ConfigureAuthentication(IServiceCollection services)
     {
         options.TokenValidationParameters = Configuration.Instance.TokenValidationParameters;
         options.RequireHttpsMetadata = false;
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/chat-hub")))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 }

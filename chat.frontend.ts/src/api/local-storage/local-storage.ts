@@ -5,7 +5,7 @@ export const saveToken = (token: string | null | undefined) => {
 }
 
 export const getToken = () => {
-    return localStorage.getItem('token');
+    return localStorage.getItem('token') ?? "";
 }
 
 export const saveRefreshToken = (refreshToken: string | null | undefined) => {

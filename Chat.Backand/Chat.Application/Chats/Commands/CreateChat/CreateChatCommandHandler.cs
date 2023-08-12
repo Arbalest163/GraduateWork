@@ -21,6 +21,7 @@ public class CreateChatCommandHandler
             User = user,
             Users = new List<User>() { user },
             Title = request.Title,
+            ChatLogo = request.ChatLogo,
             Id = Guid.NewGuid(),
             DateCreateChat = DateTimeOffset.UtcNow,
             IsActive = true,

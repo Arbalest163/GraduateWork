@@ -10,6 +10,7 @@ export interface ChatListVm {
 export interface ChatLookupDto {
     id: string;
     title: string;
+    chatLogo: string;
     isCreatorChat: boolean;
 }
 
@@ -31,8 +32,19 @@ export interface ChatMessageDto {
     hasRightToEdit: boolean;
 }
 
+export interface ReceiveMessage {
+    id: string;
+    text: string;
+    user: ChatUserDto;
+    date: string;
+    timeSendMessage: string;
+}
+
 export interface UserBase {
+    id: string;
     nickname: string;
+    avatar: string;
+    role: Role;
 }
 
 export interface CurrentUser extends UserBase {
@@ -40,7 +52,6 @@ export interface CurrentUser extends UserBase {
 }
 
 export interface ChatUserDto extends UserBase {
-    avatar: string;
 }
 
 export interface ChatVm {
@@ -60,6 +71,7 @@ export interface ChatInfoVm {
 
 export interface CreateChatDto {
     title: string;
+    chatLogo: string;
 }
 
 export interface CreateMessageDto {
@@ -77,6 +89,13 @@ export enum OpeningDirection {
     DownLeft = 'down-left',
     UpRight = 'up-right',
     UpLeft = 'up-left',
+}
+
+export enum Role
+{
+    Admin = "Admin",
+    Support = "Support",
+    User = "User"
 }
 
 export interface ProblemDetails {
@@ -121,9 +140,15 @@ export interface Token {
     expires: number;
 }
 
+export interface EditChatVm {
+    chatLogo: string;
+    title: string;
+}
+
 export interface UpdateChatDto {
     chatId: string;
     title?: string;
+    chatLogo: string;
     deleteUser?: string;
     addUser?: string;
 }

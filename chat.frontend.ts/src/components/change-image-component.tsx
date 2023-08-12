@@ -1,11 +1,12 @@
 import { ChangeEvent, FC, ReactElement, useRef } from "react";
 
-interface AvatarProps {
+interface ChangeImageProps {
     source: string;
-    onAvatarChange: (base64: string) => void;
+    onImageChange: (base64: string) => void;
+    description?: string;
 }
 
-const ChangeAvatarComponent : FC<AvatarProps> = ({source, onAvatarChange}) : ReactElement => {
+const ChangeImageComponent : FC<ChangeImageProps> = ({source, onImageChange: onImageChange, description}) : ReactElement => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -14,7 +15,7 @@ const ChangeAvatarComponent : FC<AvatarProps> = ({source, onAvatarChange}) : Rea
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64 = reader.result as string;
-                onAvatarChange(base64);
+                onImageChange(base64);
             };
             reader.readAsDataURL(file);
         }
@@ -26,10 +27,10 @@ const ChangeAvatarComponent : FC<AvatarProps> = ({source, onAvatarChange}) : Rea
         }
     };
     return(
-        <div className="avatar-container-edit">
+        <div className="image-container-edit">
             <img
                 src={source}
-                alt="Avatar"
+                alt={description ? description : 'Image'}
                 className="pointer-hover"
                 onClick={handleAvatarClick}
             />
@@ -45,4 +46,4 @@ const ChangeAvatarComponent : FC<AvatarProps> = ({source, onAvatarChange}) : Rea
     );
 }
 
-export default ChangeAvatarComponent;
+export default ChangeImageComponent;

@@ -6,13 +6,14 @@ import { ErrorModal } from "../modals/error-modal-component";
 import ChatHeaderInfoComponent from "./chat-header-info-component";
 import ChatMessageGroupsComponent from "./chat-message-groups-component";
 import ChatMessageInputComponent from "./chat-message-input";
+import useSelectedChatContext from "../hooks/useSelectedChatContext";
 
 interface ChatItemInfoProps {
-    chatId: string;
     updateChats: () => void;
 }
 
-const ChatItemInfoComponent: FC<ChatItemInfoProps> = ({chatId, updateChats}) : ReactElement => {
+const ChatItemInfoComponent: FC<ChatItemInfoProps> = ({updateChats}) : ReactElement => {
+    const {selectedChatId} = useSelectedChatContext();
     const [messageInput, setMessageInput] = useState<string>('');
     const {openModal} = useModalContext();
 
@@ -21,9 +22,9 @@ const ChatItemInfoComponent: FC<ChatItemInfoProps> = ({chatId, updateChats}) : R
     }
 
     const handleMessageSend = () => {
-        if(messageInput) {
+        if(messageInput && selectedChatId) {
             let query: CreateMessageDto = {
-                chatId: chatId,
+                chatId: selectedChatId,
                 message: messageInput
             };
             chatClient.createMessage(query)
@@ -38,15 +39,18 @@ const ChatItemInfoComponent: FC<ChatItemInfoProps> = ({chatId, updateChats}) : R
     }
 
     return (
-        <div className="chat-item-container">
-            <ChatHeaderInfoComponent chatId={chatId} updateChats={updateChats}/>
-            <ChatMessageGroupsComponent chatId={chatId}/>
+        selectedChatId 
+        ? <div className="chat-item-container">
+            <ChatHeaderInfoComponent chatId={selectedChatId} updateChats={updateChats}/>
+            <ChatMessageGroupsComponent chatId={selectedChatId}/>
             <ChatMessageInputComponent 
                 messageInput={messageInput} 
                 setMessageInput={setMessageInput} 
                 handleMessageSend={handleMessageSend}
             />
         </div>
+        : <div>Выберете кому написать...</div>
+        
     )
 }
 

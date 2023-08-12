@@ -2,10 +2,11 @@ import { FC, ReactElement, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import useModalContext from "../hooks/useModalContext";
 import chatClient from "../api/clients/chat-client";
-import { ApiError } from "../api/models/models";
+import { ApiError, CreateChatDto } from "../api/models/models";
 import useValidationErrors from "../hooks/useValidationErrors";
 import { stringEquals } from "../api/common/common-components";
 import { ErrorModal } from "../modals/error-modal-component";
+import ChangeImageComponent from "../components/change-image-component";
 
 interface ChatCreateProps {
     updateChats: () => void;
@@ -13,9 +14,9 @@ interface ChatCreateProps {
 
 const ChatCreateComponent : FC<ChatCreateProps> = ({updateChats}) : ReactElement => {
     const {closeModal} = useModalContext();
-    const [chatTitle, setChatTitle] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const {openModal} = useModalContext();
+    const [createChatDto, setCreateChatDto] = useState<CreateChatDto>({chatLogo: '', title: ''});
 
     const { validationErrors,
         setValidationErrors, 
@@ -28,7 +29,7 @@ const ChatCreateComponent : FC<ChatCreateProps> = ({updateChats}) : ReactElement
         
 
     const createChat = () => {
-        chatClient.createChat({title: chatTitle})
+        chatClient.createChat(createChatDto)
             .then(() => {
                 updateChats();
                 closeModal();
@@ -42,10 +43,27 @@ const ChatCreateComponent : FC<ChatCreateProps> = ({updateChats}) : ReactElement
             });
     }
 
+    const handleInputChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setCreateChatDto((prevChat) => ({
+            ...prevChat,
+            [name]: value,
+        }));
+        clearValidationError(name);
+    };
+
+    const handleChatLogoChange = (base64: string) => {
+        setCreateChatDto((prevChat) => ({
+          ...prevChat,
+          chatLogo: base64,
+        }));
+    };
+
     return (
         <div className="bg">
              <Dialog.Panel className="popup">
                 <div className="modal-title">Создать чат</div>
+                <ChangeImageComponent source={createChatDto.chatLogo} onImageChange={handleChatLogoChange}/>
                 {
                     isAnyValidationError('title') 
                     && <div className='error-container'>
@@ -59,9 +77,9 @@ const ChatCreateComponent : FC<ChatCreateProps> = ({updateChats}) : ReactElement
                     id="title"
                     name="title"
                     placeholder="Название чата"
-                    value={chatTitle}
+                    value={createChatDto.title}
                     maxLength={20}
-                    onChange={(e) => setChatTitle(e.target.value)}
+                    onChange={handleInputChange}
                 />
                 <div className="button-panel">
                     <button className="button" onClick={createChat}>Создать</button>

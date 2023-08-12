@@ -7,6 +7,7 @@ using Chat.Application.Chats.Commands.UpdateChat;
 using Chat.Application.Chats.Queries.GetChat;
 using Chat.Application.Chats.Queries.GetChatInfo;
 using Chat.Application.Chats.Queries.GetChatList;
+using Chat.Application.Chats.Queries.GetEditChat;
 using Chat.Application.Chats.Queries.GetMessageGroups;
 using Chat.Application.Common;
 using Chat.Application.Users.Queries.GetAvatar;
@@ -128,6 +129,23 @@ public class ChatController : BaseController
         return Ok(chatId);
     }
 
+    [HttpGet]
+    [Authorize]
+    [Route("chat/edit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<EditChatVm>> GetEditChat([FromQuery] Guid chatId)
+    {
+        var query = new GetEditChatQuery
+        {
+            ChatId = chatId,
+        };
+        await Mediator.Send(query);
+        return NoContent();
+    }
+
+    
+
     /// <summary>
     /// Изменить чат
     /// </summary>
@@ -204,7 +222,6 @@ public class ChatController : BaseController
     public async Task<ActionResult<string>> CreateMessage([FromBody] CreateMessageDto createMessageDto)
     {
         var command = _mapper.Map<CreateMessageCommand>(createMessageDto);
-        command.UserId = UserPrincipal.UserId;
         var message = await Mediator.Send(command);
         return Ok(message);
     }

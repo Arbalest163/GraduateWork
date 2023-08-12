@@ -60,6 +60,7 @@ public class FileManager : IFileManager
             ".jpg" => "data:image/jpg;base64,",
             ".jpeg" => "data:image/jpeg;base64,",
             ".png" => "data:image/png;base64,",
+            _ => throw new NotImplementedException()
         };
     }
 }

@@ -12,13 +12,15 @@ import { ErrorModal } from '../modals/error-modal-component';
 import ChatItemInfoComponent from '../components/chat-item-info-component';
 import EditProfileComponent from '../components/edit-profile-component';
 import ChangePasswordComponent from '../components/change-password-component';
-import { getFilterContext, saveFilterContext, saveSelectedChat } from '../api/local-storage/local-storage';
+import { getFilterContext, getToken, saveFilterContext, saveSelectedChat } from '../api/local-storage/local-storage';
 import ChatListComponent from '../components/chat-list-component';
+import useAuthContext from '../hooks/useAuthContext';
+import { SelectedChatContextProvider } from './selected-chat-provider';
 
 const ChatComponent: FC<{}> = (): ReactElement => {
+  const { currentUser } = useAuthContext();
   const {openModal} = useModalContext();
   const [chats, setChats] = useState<ChatLookupDto[] | undefined>(undefined);
-  const [selectedChatId, setSelectedChatId] = useState<string | undefined>(undefined);
   const [filterContext, setChatFilter] = useState<FilterContext>(getFilterContext());
 
   const navigate = useNavigate();
@@ -70,25 +72,27 @@ const ChatComponent: FC<{}> = (): ReactElement => {
     ];
 
   return (
-    <div className='chat-container'>
-      <div className="chats-container">
-        <div className='chats-top-container'>
-          <ActionChatsComponent buttons={actionChatsButtons} imageMenuButton={() => <MenuBurger/>}/>
-          <div className="filter-input-container">
-            <FormControl 
-            placeholder='Поиск' 
-            className='input' 
-            onChange={(e) => handleChangeFilter(e.target.value)}/>
+    <SelectedChatContextProvider>
+      <div className='chat-container'>
+        <div className="chats-container">
+          <div className='chats-top-container'>
+            <ActionChatsComponent buttons={actionChatsButtons} imageMenuButton={() => <MenuBurger/>}/>
+            <div className="filter-input-container">
+              <FormControl 
+              placeholder='Поиск' 
+              className='input' 
+              onChange={(e) => handleChangeFilter(e.target.value)}/>
+            </div>
+          </div>
+          <div className='chats-bottom-container'>
+            <ChatListComponent chats={chats} getListChats={getListChats} filterContext={filterContext}/>
           </div>
         </div>
-        <div className='chats-bottom-container'>
-          <ChatListComponent chatId={selectedChatId} selectChat={setSelectedChatId} chats={chats} getListChats={getListChats} filterContext={filterContext}/>
+        <div className="message-container">
+          <ChatItemInfoComponent updateChats={getListChats}/>
         </div>
       </div>
-      <div className="message-container">
-        {selectedChatId && <ChatItemInfoComponent chatId={selectedChatId} updateChats={getListChats}/>}
-      </div>
-    </div>
+    </SelectedChatContextProvider>
   );
 };
 

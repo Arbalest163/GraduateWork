@@ -1,4 +1,5 @@
-﻿using Chat.Application.Interfaces;
+﻿using Chat.Application.Hubs;
+using Chat.Application.Interfaces;
 using Chat.Domain;
 using Chat.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -70,6 +71,7 @@ public class DbInitializer
                 Id = Guid.NewGuid(),
                 DateCreateChat = DateTime.Now,
                 Title = $"Тестовый чат {i}",
+                ChatLogo = "",
                 User = user,
                 IsActive = true,
             };

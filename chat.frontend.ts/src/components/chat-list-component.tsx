@@ -1,16 +1,18 @@
 import { FC, ReactElement, useEffect, useState } from "react";
 import { ChatLookupDto, FilterContext } from "../api/models/models";
+import useSelectedChatContext from "../hooks/useSelectedChatContext";
+import Connector from '../signalr-connection';
 
 interface ChatListProps {
-    chatId: string | undefined;
-    selectChat: (chatId: string) => void;
     chats: ChatLookupDto[] | undefined;
     getListChats: () => void;
     filterContext: FilterContext;
 }
 
-const ChatListComponent : FC<ChatListProps> = ({chatId, selectChat, chats, getListChats, filterContext}) : ReactElement => {
-    
+const ChatListComponent : FC<ChatListProps> = ({chats, getListChats, filterContext}) : ReactElement => {
+    const {selectedChatId, setSelectedChatId} = useSelectedChatContext();
+    const {joinChatGroup, leaveChatGroup} = Connector();
+
     useEffect(() => {
         getListChats();
     }, [filterContext]);
@@ -23,13 +25,31 @@ const ChatListComponent : FC<ChatListProps> = ({chatId, selectChat, chats, getLi
     return () => clearInterval(intervalId);
     }, []);
 
+    const handleSelectedChat = (chatId: string) => {
+        if(selectedChatId && selectedChatId !== chatId) {
+            leaveChatGroup(selectedChatId);
+        }
+        if(selectedChatId !== chatId) {
+            setSelectedChatId(chatId);
+            joinChatGroup(chatId);
+        }
+    }
+
     return (
         <div>
             {chats?.map((chat) => (
-              <div key={chat.id} 
-                className={`${chat.isCreatorChat ? "creator-chat-item" : "chat-item"} pointer-hover ${chat.id === chatId ? 'selected' : ''}`} 
-                onClick={() => selectChat(chat.id)}>
-                {chat.title}
+              <div key={chat.id} className="pointer-hover chat-list-item"
+                onClick={() => handleSelectedChat(chat.id)}>
+                    <div className="logo-container">
+                        <img className="logo-50-c" src={chat.chatLogo} />
+                    </div>
+                    <div className={ `${chat.isCreatorChat 
+                                ? "creator-chat" 
+                                : ""}
+                                ${chat.id === selectedChatId ? 'selected' : ''}
+                                chat-list-title`}>
+                                    {chat.title}
+                    </div>
               </div>
             ))}
         </div>

@@ -8,7 +8,7 @@ import authClient from "../api/clients/auth-client";
 import { ErrorModal } from "../modals/error-modal-component";
 import { Calendar } from "react-date-range";
 import useModalContext from "../hooks/useModalContext";
-import ChangeAvatarComponent from "./change-avatar-component";
+import ChangeImageComponent from "./change-image-component";
 
 const EditProfileComponent : FC<{}> = () : ReactElement => {
     const {openModal, closeModal} = useModalContext();
@@ -108,7 +108,7 @@ const EditProfileComponent : FC<{}> = () : ReactElement => {
     return (
         <div className="bg">
           <Dialog.Panel className="popup">
-            <ChangeAvatarComponent source={user.avatar} onAvatarChange={handleAvatarChange}/>
+            <ChangeImageComponent source={user.avatar} onImageChange={handleAvatarChange} description="Avatar"/>
             <div className='container-input'>
               {
                 isAnyValidationError('firstname') 

@@ -3,7 +3,7 @@ import ActionChatsComponent from "./action-chats-component";
 import MenuBurger from "../images/menu-burger";
 import { Button, ChatInfoVm } from "../api/models/models";
 import chatClient from "../api/clients/chat-client";
-import ChatRenameComponent from "./chat-rename-component";
+import ChatEditComponent from "./chat-edit-component";
 import useModalContext from "../hooks/useModalContext";
 
 interface ChatHeaderInfoProps {
@@ -22,8 +22,8 @@ const ChatHeaderInfoComponent: FC<ChatHeaderInfoProps> = ({chatId, updateChats})
             });
     }
 
-    const renameChat = () => {
-        openModal(<ChatRenameComponent chatId={chatId} updateChats={updateChats}/>);
+    const editChat = () => {
+        openModal(<ChatEditComponent chatId={chatId} updateChats={updateChats}/>);
     }
 
     const getDefaultButtons = () => {
@@ -40,8 +40,8 @@ const ChatHeaderInfoComponent: FC<ChatHeaderInfoProps> = ({chatId, updateChats})
     };
 
     const renameChatButton = {
-        label: 'Переименовать чат',
-        onClick: renameChat
+        label: 'Редактировать чат',
+        onClick: editChat
     };
 
     const getChatInfo = () => {

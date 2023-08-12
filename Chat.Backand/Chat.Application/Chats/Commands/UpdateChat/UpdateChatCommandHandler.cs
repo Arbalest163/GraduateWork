@@ -23,6 +23,7 @@ public class UpdateChatCommandHandler
         if(chat.User.Id == _userPrincipal.UserId || _userPrincipal.Role == Role.Admin)
         {
             chat.Title = request.Title;
+            chat.ChatLogo = request.ChatLogo;
 
             if (request.AddUserId is not null)
             {
