@@ -9,13 +9,15 @@ public class EditUserVm : IMapWith<User>
     public string Firstname { get; set; } = string.Empty;
     public string Lastname { get; set; } = string.Empty;
     public string Middlename { get; set; } = string.Empty;
-    public DateTimeOffset? Birthday { get; set; }
+    public string Birthday { get; set; } = string.Empty;
 
     public void Mapping(Profile profile)
     {
         profile.CreateMap<User, EditUserVm>()
             .ForMember(userDto => userDto.Avatar,
                 opt => opt.MapFrom(user => Converter.CreateBase64File(user.Avatar)))
+            .ForMember(userDto => userDto.Birthday,
+                opt => opt.MapFrom(user => user.Birthday.HasValue ? user.Birthday.Value.LocalDateTime.ToString("dd.MM.yyyy") : string.Empty))
             ;
     }
 }
