@@ -5,18 +5,29 @@ const URL = process.env.HUB_ADDRESS ?? "http://192.168.2.114:5162/chat-hub";
 class Connector {
     private connection: signalR.HubConnection;
     public onMessageReceivedEvent: (onMessageReceived: (message: ReceiveMessage) => void) => void;
+    public onInformationMessageRecievedEvent: (onInformationMessageReceived: (message: ReceiveMessage) => void) => void;
     public onChatCountChangeEvent: (onChatCountChange: () => void) => void;
     static instance: Connector;
     constructor() {
-        this.connection = new signalR.HubConnectionBuilder()
-        .withUrl(URL, { accessTokenFactory: () => getToken() })
-        .configureLogging(signalR.LogLevel.Information)
-        .withAutomaticReconnect()
-        .build();
-        this.connection.start().catch(err => document.write(err));
+        this.connection = this.initConnection();
+
+        this.connection.start()
+        .then(() => console.log("Connect chat-hub success"))
+        .catch(err => console.log(err));
+
+        this.connection.onreconnecting((error) => {
+            console.log('Reconnecting...', error);
+            this.connection = this.initConnection();
+        });
+
         this.onMessageReceivedEvent = (onMessageReceived) => {
             this.connection.on("ReceiveMessage", (message: ReceiveMessage) => {
                 onMessageReceived(message);
+            });
+        }
+        this.onInformationMessageRecievedEvent = (onInformationMessageReceived) => {
+            this.connection.on("ReceiveInformationMessage", (message: ReceiveMessage) => {
+                onInformationMessageReceived(message);
             });
         }
         this.onChatCountChangeEvent = (onChatCountChange) => {
@@ -24,6 +35,15 @@ class Connector {
                 onChatCountChange();
             });
         }
+    }
+
+    private initConnection = () => {
+        const newToken = getToken();
+        return new signalR.HubConnectionBuilder()
+            .withUrl(URL, { accessTokenFactory: () => newToken })
+            .configureLogging(signalR.LogLevel.Information)
+            .withAutomaticReconnect([0, 1000, 2000, 3000, 4000, 5000])
+            .build();
     }
 
     public joinChatGroup = (chatId: string) => {

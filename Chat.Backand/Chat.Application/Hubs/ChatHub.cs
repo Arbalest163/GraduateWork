@@ -22,20 +22,14 @@ public class ChatHub : Hub<IChatClient>
     {
         //await Clients.All.ReceiveMessage($"{_userPrincipal.NickName} офлайн");
     }
-    public async Task SendMessageToChat(string chatId, string message)
-    {
-        //await Clients.All.ReceiveMessage($"{message}");
-    }
 
     public async Task JoinChatGroup(string chatId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
-        //await Clients.Group(chatId).ReceiveMessage($"{_userPrincipal.NickName} присоеденился к группе");
     }
 
     public async Task LeaveChatGroup(string chatId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatId);
-        //await Clients.Group(chatId).ReceiveMessage($"{_userPrincipal.NickName} вышел из группы");
     }
 }

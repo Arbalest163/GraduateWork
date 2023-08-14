@@ -3,22 +3,41 @@ import smile from '../images/smile.png'
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
 import { FC, ReactElement, useRef, useState } from "react";
-import { FormControl } from "react-bootstrap";
+import { ApiError, CreateMessageDto } from '../api/models/models';
+import useSelectedChatContext from '../hooks/useSelectedChatContext';
+import chatClient from '../api/clients/chat-client';
 
-interface ChatMessageInputProps {
-    messageInput: string;
-    setMessageInput: React.Dispatch<React.SetStateAction<string>>;
-    handleMessageSend: () => void;
-}
 
-const ChatMessageInputComponent : FC<ChatMessageInputProps> 
-= ({messageInput, setMessageInput, handleMessageSend}): ReactElement => {
-    const inputRef = useRef<HTMLInputElement>(null);
+const ChatMessageInputComponent : FC<{}> 
+= (): ReactElement => {
+    const inputRef = useRef<HTMLTextAreaElement>(null);
+    const {selectedChatId} = useSelectedChatContext();
     const pickerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+    const [messageInput, setMessageInput] = useState<string>('');
+
+
+    const handleMessageSend = () => {
+        if(messageInput && selectedChatId) {
+            let query: CreateMessageDto = {
+                chatId: selectedChatId,
+                message: messageInput
+            };
+            chatClient.createMessage(query)
+                .then(() => {
+                    setMessageInput('');
+                })
+                .catch((error: ApiError) => {
+                    if(error.message)
+                    console.log(error.message);
+                });
+        }
+    }
     
-    const handleMessageSendEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
+    const handleMessageSendEnter = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
             handleMessageSend();
         }
     };
@@ -43,43 +62,34 @@ const ChatMessageInputComponent : FC<ChatMessageInputProps>
 
     const handleEmojiPickup = (emoji: any) => {
         if (inputRef) {
-        const cursorPosition = inputRef.current?.selectionStart || 0;
-        setMessageInput((prevValue) => prevValue + emoji.native)
-
-        const newCursorPosition = cursorPosition + emoji.native!.length;
-
-        setTimeout(() => {
-            inputRef.current?.setSelectionRange(
-            newCursorPosition,
-            newCursorPosition
-            );
-        }, 100);
+            setMessageInput((prevValue) => prevValue + emoji.native)
         }
     };
     
     return (
         <div className="container-input">
-                <FormControl
-                    ref={inputRef}
-                    placeholder='Написать сообщение...'
-                    className="input"
-                    value={messageInput}
-                    onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyDown={handleMessageSendEnter}
-                />
-                <div className='button-input'>
-                    <img className='image-input smile-button pointer-hover' src={smile} onMouseEnter={handleMouseEnterPicker} />
-                    {showEmojiPicker && (
-                        <div className='smile-picker' onMouseLeave={handleMouseLeave} onMouseEnter={handleMouseEnterPicker}>
-                        <Picker
-                            data={data}
-                            onEmojiSelect={handleEmojiPickup}
-                        />
-                        </div>
-                    )}
-                    <img onClick={handleMessageSend} className='image-input pointer-hover' src={send} />
-                </div>
+            <textarea
+                ref={inputRef}
+                rows={1}
+                placeholder='Написать сообщение...'
+                className="input-textarea"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyDown={handleMessageSendEnter}
+            />
+            <div className='button-input'>
+                <img className='image-input smile-button pointer-hover' src={smile} onMouseEnter={handleMouseEnterPicker} />
+                {showEmojiPicker && (
+                    <div className='smile-picker' onMouseLeave={handleMouseLeave} onMouseEnter={handleMouseEnterPicker}>
+                    <Picker
+                        data={data}
+                        onEmojiSelect={handleEmojiPickup}
+                    />
+                    </div>
+                )}
+                <img onClick={handleMessageSend} className='image-input pointer-hover' src={send} />
             </div>
+        </div>
     );
 }
 

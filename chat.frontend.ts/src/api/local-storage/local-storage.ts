@@ -47,6 +47,10 @@ export const saveSelectedChat = (chatId: string | undefined) => {
     localStorage.setItem('selectedChatId', chatId ? chatId : '');
 }
 
+export const clearSelectedChat = () => {
+    saveSelectedChat(undefined);
+}
+
 export const getSelectedChat = () => {
     return localStorage.getItem('selectedChatId') ?? undefined
 }

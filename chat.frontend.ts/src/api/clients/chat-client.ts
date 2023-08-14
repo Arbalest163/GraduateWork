@@ -23,6 +23,11 @@ export class ChatClient extends ClientBase {
             .then(this.handleResponse, this.handleError);
     }
 
+    checkChatAccess(chatId: string): Promise<boolean> {
+        return this.$http.get("chat/access", { chatId: chatId })
+            .then(this.handleResponse, this.handleError);
+    }
+
     createChat(body: CreateChatDto): Promise<string> {
         return this.$http.post("chat", body)
             .then(this.handleResponse, this.handleError);
@@ -61,6 +66,11 @@ export class ChatClient extends ClientBase {
     uploadFile(formData: FormData) : Promise<string> {
         return this.$http.postForm("chat/upload-file", formData)
         .then(this.handleResponse, this.handleError);
+    }
+
+    joinChat(chatId: string) : Promise<void> {
+        return this.$http.post("chat/join-chat", { chatId: chatId })
+            .then(this.handleResponse, this.handleError);
     }
 };
 

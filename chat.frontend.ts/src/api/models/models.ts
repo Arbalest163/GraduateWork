@@ -20,25 +20,34 @@ export interface MessageGroupsVm {
 
 export interface MessageGroupDto {
     date: string;
-    messages: ChatMessageDto[]
+    messages: ChatMessage[]
 }
 
-export interface ChatMessageDto {
-    id: string;
-    text: string;
-    user: ChatUserDto;
-    timeSendMessage: string;
-    isCreatorMessage: boolean;
-    hasRightToEdit: boolean;
+export type ChatMessage = {
+    text: string
+} & (Message | InformationMessage)
+
+type Message = {
+    isInformation: false
+    id: string
+    user: ChatUserDto
+    timeSendMessage: string
+    isCreatorMessage: boolean
+    hasRightToEdit: boolean
 }
 
-export interface ReceiveMessage {
-    id: string;
-    text: string;
-    user: ChatUserDto;
-    date: string;
-    timeSendMessage: string;
+type InformationMessage = {
+    isInformation: true
 }
+
+export type ReceiveMessage = {
+    text: string
+    date: string
+} & ({
+    id: string
+    user: ChatUserDto
+    timeSendMessage: string
+})
 
 export interface UserBase {
     id: string;

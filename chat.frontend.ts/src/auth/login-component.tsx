@@ -10,6 +10,8 @@ import useModalContext from '../hooks/useModalContext';
 import { stringEquals } from '../api/common/common-components';
 import { ErrorModal } from '../modals/error-modal-component';
 import useValidationErrors from '../hooks/useValidationErrors';
+import Connector from '../signalr-connection';
+import mem from 'mem';
 
 const LoginComponent : FC<{}> = (): ReactElement => {
   const { setCurrentUser } = useAuthContext();
@@ -27,8 +29,6 @@ const LoginComponent : FC<{}> = (): ReactElement => {
     password: '',
   });
 
-  const [isDisabledButton, setDisabledButton] = useState<boolean>(false);
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setAuthQuery((prevAuthQuery) => ({
@@ -43,7 +43,6 @@ const LoginComponent : FC<{}> = (): ReactElement => {
   }
 
   const handleLogin = () => {
-    setDisabledButton(true);
 
     authClient.login(authQuery)
       .then((token) => {
@@ -51,6 +50,7 @@ const LoginComponent : FC<{}> = (): ReactElement => {
         saveRefreshToken(token.refreshToken);
         authClient.getUser().then((user) => {
           setCurrentUser(user);
+          const _ = Connector();
           navigate('/chats', { replace: true });
         });
       })
@@ -61,10 +61,10 @@ const LoginComponent : FC<{}> = (): ReactElement => {
         } else if(error.errorsValidation) {
           setValidationErrors(error.errorsValidation);
         }
-
-        setDisabledButton(false);
       });
   };
+
+  const memoizedHandleLogin = mem(handleLogin, {maxAge: 10000})
 
   useEffect(() => {
     deleteToken();
@@ -116,7 +116,7 @@ const LoginComponent : FC<{}> = (): ReactElement => {
               />
             </div>
             <div className='container-center'>
-              <button className='button' onClick={handleLogin} disabled={isDisabledButton}>Войти</button>
+              <button className='button' onClick={memoizedHandleLogin}>Войти</button>
             </div>
             <div className='container-center'>
               <p className='text-register'>

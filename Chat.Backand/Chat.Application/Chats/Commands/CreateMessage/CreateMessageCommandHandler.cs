@@ -1,5 +1,4 @@
 ﻿using Chat.Application.Common;
-using Chat.Application.Common.Exceptions;
 using Chat.Application.Common.Models;
 using Chat.Application.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -23,11 +22,14 @@ public class CreateMessageCommandHandler
     public async Task<string> Handle(CreateMessageCommand request,
         CancellationToken cancellationToken)
     {
-        var chat = await _dbContext.Chats.Include(x => x.Users).FirstOrDefaultAsync(x => x.Id == request.ChatId);
+        var chat = await _dbContext.Chats
+            .Where(x => x.Id == request.ChatId)
+            .Where(x => _userPrincipal.Role == Role.Admin || x.Users.Any(u => u.Id == _userPrincipal.UserId))
+            .FirstOrDefaultAsync(cancellationToken);
         
         if (chat is null)
         {
-            throw new NotFoundException(nameof(Domain.Chat), request.ChatId);
+            throw new UnauthorizedAccessException();
         }
 
         var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == _userPrincipal.UserId) ?? throw new UnauthorizedAccessException();
@@ -40,11 +42,6 @@ public class CreateMessageCommandHandler
         };
 
         chat.Messages.Add(message);
-
-        if(!chat.Users.Any(x => x.Id == user.Id))
-        {
-            chat.Users.Add(user);
-        }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

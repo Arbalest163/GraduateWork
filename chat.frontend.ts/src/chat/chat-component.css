@@ -42,6 +42,7 @@
 
 .chats-bottom-container::-webkit-scrollbar-track {
   background-image: linear-gradient(to bottom, #d4a241, #ef4b42, #8b599e);
+  border-radius: 15px;
 }
 
 .chats-bottom-container::-webkit-scrollbar-thumb {
@@ -132,12 +133,28 @@
   background: #212121;
 }
 
+.information-message-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 3px 3px;
+}
+
+.information-message {
+  background-color: #2b2b2b;
+  border-radius: 15px;
+  padding: 5px 5px;
+  color: #dfdfdf;
+}
+
 .message-groups-container::-webkit-scrollbar {
   width: 8px;
 }
 
 .message-groups-container::-webkit-scrollbar-track {
   background: rgb(219, 208, 51);
+  border-radius: 15px;
 }
 
 .message-groups-container::-webkit-scrollbar-thumb {
@@ -148,6 +165,20 @@
 
 .text-input-container {
   margin-top: auto;
+}
+
+.button-join-chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-join-chat {
+  height: 30px;
+  border-radius: 15px;
+  background-color: #01c753af;
+  font-size: 15px;
 }
 
 .message-groups-container {
@@ -211,12 +242,13 @@
 }
 
 .button-input {
-  position: absolute;
   right: 0;
   margin: 5px 5px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  background-color: #6e9481;
+  border-radius: 15px;
 }
 
 .image-input {
@@ -231,7 +263,7 @@
 
 .smile-picker {
   position: absolute;
-  bottom: 33px;
+  bottom: 80px;
 }
 
 .chat-info-container {
@@ -341,6 +373,7 @@
   padding: 0;
   margin: 0;
   margin-bottom: 10px;
+  overflow-wrap: break-word;
 }
 .nickname {
   margin: 0 0 0 5px;

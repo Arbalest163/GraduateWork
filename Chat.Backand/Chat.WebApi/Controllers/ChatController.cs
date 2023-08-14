@@ -3,7 +3,9 @@ using Chat.Application.Chats.Commands.CreateChat;
 using Chat.Application.Chats.Commands.CreateMessage;
 using Chat.Application.Chats.Commands.DeleteCommand;
 using Chat.Application.Chats.Commands.DeleteMessage;
+using Chat.Application.Chats.Commands.JoinChat;
 using Chat.Application.Chats.Commands.UpdateChat;
+using Chat.Application.Chats.Queries.CheckChatAccess;
 using Chat.Application.Chats.Queries.GetChat;
 using Chat.Application.Chats.Queries.GetChatInfo;
 using Chat.Application.Chats.Queries.GetChatList;
@@ -304,4 +306,44 @@ public class ChatController : BaseController
         var chatInfo = await Mediator.Send(query);
         return Ok(chatInfo);
     }
+
+    /// <summary>
+    /// Проверить доступ к чату чате
+    /// </summary>
+    /// <returns>Returns true/false</returns>
+    /// <response code="200">Успешно</response>
+    /// <response code="401">Пользователь не авторизован</response>
+    [HttpGet]
+    [Authorize]
+    [Route("chat/access")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<bool>> CheckChatAccess([FromQuery] Guid chatId)
+    {
+        var query = new CheckChatAccessQuery
+        {
+            ChatId = chatId,
+        };
+        var access = await Mediator.Send(query);
+        return Ok(access);
+    }
+
+    /// <summary>
+    /// Присоедениться к чату
+    /// </summary>
+    /// <param name="command">Объект</param>
+    /// <response code="200">Успешно</response>
+    /// <response code="401">Пользователь не авторизован</response>
+    [HttpPost]
+    [Authorize]
+    [Route("chat/join-chat")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> JoinChat([FromBody] JoinChatCommand command)
+    {
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    
 }

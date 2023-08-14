@@ -9,7 +9,7 @@ import LogoutComponent from './auth/logout-component';
 import { Link } from 'react-router-dom';
 import useAuthContext from './hooks/useAuthContext';
 import ModalComponent from './modals/modal-component';
-import { deleteToken } from './api/local-storage/local-storage';
+import { clearSelectedChat } from './api/local-storage/local-storage';
 
 
 const App: FC<{}> = (): ReactElement => {
@@ -17,22 +17,13 @@ const App: FC<{}> = (): ReactElement => {
   const {currentUser} = useAuthContext();
 
   useEffect(() => {
+    clearSelectedChat();
     if(currentUser){
       setIsAuth(true);
     } else {
       setIsAuth(false);
     }
   }, [currentUser]);
-
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if(currentUser) {
-  //     navigate('/chats');
-  //   } else {
-  //     navigate('/auth/login');
-  //   }
-  // }, []);
 
   return (
       <div className='App'>

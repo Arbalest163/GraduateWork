@@ -14,40 +14,13 @@ interface ChatItemInfoProps {
 
 const ChatItemInfoComponent: FC<ChatItemInfoProps> = ({updateChats}) : ReactElement => {
     const {selectedChatId} = useSelectedChatContext();
-    const [messageInput, setMessageInput] = useState<string>('');
-    const {openModal} = useModalContext();
-
-    const openErrorModal = (errorMessage: string) => {
-        openModal(ErrorModal(errorMessage));
-    }
-
-    const handleMessageSend = () => {
-        if(messageInput && selectedChatId) {
-            let query: CreateMessageDto = {
-                chatId: selectedChatId,
-                message: messageInput
-            };
-            chatClient.createMessage(query)
-                .then(() => {
-                    setMessageInput('');
-                })
-                .catch((error: ApiError) => {
-                    if(error.message)
-                    openErrorModal(error.message);
-                });
-        }
-    }
-
+    
     return (
         selectedChatId 
         ? <div className="chat-item-container">
             <ChatHeaderInfoComponent chatId={selectedChatId} updateChats={updateChats}/>
             <ChatMessageGroupsComponent chatId={selectedChatId}/>
-            <ChatMessageInputComponent 
-                messageInput={messageInput} 
-                setMessageInput={setMessageInput} 
-                handleMessageSend={handleMessageSend}
-            />
+            <ChatMessageInputComponent />
         </div>
         : <div>Выберете кому написать...</div>
         
