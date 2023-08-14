@@ -102,7 +102,7 @@ const ChatEditComponent  : FC<ChatEditProps> = ({chatId, updateChats}) : ReactEl
                     onChange={handleInputChange}
                 />
                 <div className="button-panel">
-                    <button className="button" onClick={renameChat}>Создать</button>
+                    <button className="button" onClick={renameChat}>Сохранить</button>
                     <button className="button" onClick={closeModal}>Отмена</button>
                 </div>
                 

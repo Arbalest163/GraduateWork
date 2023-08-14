@@ -21,6 +21,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(user => user.PasswordHash).IsRequired();
 
         builder.HasMany(x => x.UserChats).WithOne(x => x.User);
-        builder.HasMany(x => x.MemberChats).WithMany(x => x.Users);
+        builder.HasMany(x => x.MemberChats).WithMany(x => x.Members);
     }
 }

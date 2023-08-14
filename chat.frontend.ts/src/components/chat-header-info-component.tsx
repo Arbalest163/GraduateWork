@@ -5,6 +5,8 @@ import { Button, ChatInfoVm } from "../api/models/models";
 import chatClient from "../api/clients/chat-client";
 import ChatEditComponent from "./chat-edit-component";
 import useModalContext from "../hooks/useModalContext";
+import ChatDetailsComponent from "./chat-details-component";
+import useSelectedChatContext from "../hooks/useSelectedChatContext";
 
 interface ChatHeaderInfoProps {
     chatId: string;
@@ -13,11 +15,13 @@ interface ChatHeaderInfoProps {
 
 const ChatHeaderInfoComponent: FC<ChatHeaderInfoProps> = ({chatId, updateChats}) : ReactElement => {
     const [chatInfo, setChatInfo] = useState<ChatInfoVm | null>(null);
+    const {setSelectedChatId} = useSelectedChatContext();
     const {openModal} = useModalContext();
     const deleteChat = () => {
         chatClient.deleteChat(chatId)
             .then(() => {
                 setChatInfo(null);
+                setSelectedChatId("");
                 updateChats();
             });
     }
@@ -26,9 +30,13 @@ const ChatHeaderInfoComponent: FC<ChatHeaderInfoProps> = ({chatId, updateChats})
         openModal(<ChatEditComponent chatId={chatId} updateChats={updateChats}/>);
     }
 
+    const detailsChat = () => {
+        openModal(<ChatDetailsComponent chatId={chatId}/>)
+    }
+
     const getDefaultButtons = () => {
         return [
-            {label: 'Информация о чате', onClick: () => {}},
+            {label: 'Информация о чате', onClick: detailsChat},
           ];
     }
 

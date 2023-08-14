@@ -58,6 +58,13 @@ const ChatMessageGroupsComponent : FC<ChatMessageGroupsProps> = ({chatId}) : Rea
         };
         
         setMessageGroups(prevMessageGroups => {
+            if(prevMessageGroups.length === 0){
+                const messageGroup = {
+                    date: message.date,
+                    messages: []
+                }
+                prevMessageGroups.push(messageGroup);
+            }
             const updatedMessageGroups = prevMessageGroups?.map(group => {
                 if (group.date === message.date) {
                     const hasSameTextInformationMessage = group.messages
@@ -94,7 +101,7 @@ const ChatMessageGroupsComponent : FC<ChatMessageGroupsProps> = ({chatId}) : Rea
     useEffect(() => {
         console.log("Отрисовка компонента");
     }, []);
-    
+
     const joinChat = () => {
         chatClient.joinChat(chatId)
             .then(() => {

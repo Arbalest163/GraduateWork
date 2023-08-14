@@ -7,6 +7,7 @@ using Chat.Application.Chats.Commands.JoinChat;
 using Chat.Application.Chats.Commands.UpdateChat;
 using Chat.Application.Chats.Queries.CheckChatAccess;
 using Chat.Application.Chats.Queries.GetChat;
+using Chat.Application.Chats.Queries.GetChatDetails;
 using Chat.Application.Chats.Queries.GetChatInfo;
 using Chat.Application.Chats.Queries.GetChatList;
 using Chat.Application.Chats.Queries.GetEditChat;
@@ -142,8 +143,8 @@ public class ChatController : BaseController
         {
             ChatId = chatId,
         };
-        await Mediator.Send(query);
-        return NoContent();
+        var chat = await Mediator.Send(query);
+        return Ok(chat);
     }
 
     
@@ -345,5 +346,24 @@ public class ChatController : BaseController
         return Ok();
     }
 
-    
+    /// <summary>
+    /// Проверить доступ к чату чате
+    /// </summary>
+    /// <returns>Returns ChatDetailVm</returns>
+    /// <response code="200">Успешно</response>
+    /// <response code="401">Пользователь не авторизован</response>
+    [HttpGet]
+    [Authorize]
+    [Route("chat/details")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<ChatDetailsVm>> GetChatDetails([FromQuery] Guid chatId)
+    {
+        var query = new GetChatDetailsQuery
+        {
+            ChatId = chatId,
+        };
+        var chatDetailsVm = await Mediator.Send(query);
+        return Ok(chatDetailsVm);
+    }
 }

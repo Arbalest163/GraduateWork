@@ -88,6 +88,17 @@ export interface CreateMessageDto {
     message: string;
 }
 
+export interface ChatDetailsVm {
+    title: string;
+    chatLogo: string;
+    chatMembers: ChatMemer[];
+}
+
+export interface ChatMemer {
+    nickname: string;
+    avatar: string;
+}
+
 export enum OrderField {
     Date = "Date",
     Title = "Title",

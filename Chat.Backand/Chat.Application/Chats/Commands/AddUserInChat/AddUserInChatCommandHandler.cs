@@ -24,7 +24,7 @@ namespace Chat.Application.Chats.Commands.AddUserInChat
             }
 
             var user = await _dbContext.Users.FirstAsync(x => x.Id == request.UserId);
-            chat.Users.Add(user);
+            chat.Members.Add(user);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
         }

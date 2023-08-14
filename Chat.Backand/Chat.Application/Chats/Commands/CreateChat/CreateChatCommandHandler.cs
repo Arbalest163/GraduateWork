@@ -24,7 +24,7 @@ public class CreateChatCommandHandler
         var chat = new Domain.Chat
         {
             User = user,
-            Users = new List<User>() { user },
+            Members = new List<User>() { user },
             Title = request.Title,
             ChatLogo = request.ChatLogo,
             Id = Guid.NewGuid(),

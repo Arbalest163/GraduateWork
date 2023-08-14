@@ -43,7 +43,7 @@ const App: FC<{}> = (): ReactElement => {
             </Routes>
             <ModalComponent/>
         </main>
-        <footer>Дипломная работа для академии "Топ" г.Самара. Разработано на React TypeScript. Backand: С#. База данных: MSSQL. Разрабочик: Иван Гилязов. Email: evil_xacker@mail.ru</footer>
+        <footer>Дипломная работа для академии "Топ" г.Самара. Разработано на React TypeScript. Backend: C#. База данных: MSSQL. Разрабочик: Иван Гилязов. Email: evil_xacker@mail.ru</footer>
       </div>
   );
 };

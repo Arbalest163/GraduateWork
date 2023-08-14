@@ -21,7 +21,7 @@ public class JoinChatCommandHandler
     public async Task Handle(JoinChatCommand request, CancellationToken cancellationToken)
     {
         var chat = await _chatDbContext.Chats
-            .Include(c => c.Users)
+            .Include(c => c.Members)
             .Where(c => c.Id == request.ChatId)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -34,7 +34,7 @@ public class JoinChatCommandHandler
             throw new UnauthorizedAccessException();
         }
 
-        chat.Users.Add(user);
+        chat.Members.Add(user);
         await _chatDbContext.SaveChangesAsync(cancellationToken);
 
         var infMessage = new InformationMessage

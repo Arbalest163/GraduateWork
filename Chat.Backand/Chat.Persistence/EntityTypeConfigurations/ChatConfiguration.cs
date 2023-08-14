@@ -16,7 +16,7 @@ public class ChatConfiguration : IEntityTypeConfiguration<Domain.Chat>
             .WithMany(user => user.UserChats)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany(chat => chat.Users)
+        builder.HasMany(chat => chat.Members)
             .WithMany(users => users.MemberChats);
     }
 }

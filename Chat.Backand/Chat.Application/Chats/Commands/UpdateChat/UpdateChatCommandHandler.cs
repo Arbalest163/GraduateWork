@@ -28,11 +28,11 @@ public class UpdateChatCommandHandler
             if (request.AddUserId is not null)
             {
                 var addUser = await _dbContext.Users.FirstAsync(u => u.Id == request.AddUserId);
-                chat.Users.Add(addUser);
+                chat.Members.Add(addUser);
             }
             if (request.DeleteUserId is not null)
             {
-                chat.Users.RemoveAll(user => user.Id == request.DeleteUserId);
+                chat.Members.RemoveAll(user => user.Id == request.DeleteUserId);
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);

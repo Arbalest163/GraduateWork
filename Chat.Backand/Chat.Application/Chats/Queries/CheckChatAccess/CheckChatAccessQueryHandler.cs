@@ -16,7 +16,7 @@ public class CheckChatAccessQueryHandler
     {
         var chat = await _chatDbContext.Chats
             .Where(c => c.Id == request.ChatId)
-            .Where(c => c.User.Id == _userPrincipal.UserId || _userPrincipal.Role == Role.Admin || c.Users.Any(x => x.Id == _userPrincipal.UserId))
+            .Where(c => c.User.Id == _userPrincipal.UserId || _userPrincipal.Role == Role.Admin || c.Members.Any(x => x.Id == _userPrincipal.UserId))
             .FirstOrDefaultAsync(cancellationToken);
 
         return chat is not null ? true : false;

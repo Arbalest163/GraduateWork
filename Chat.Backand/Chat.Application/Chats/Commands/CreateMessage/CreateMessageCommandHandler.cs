@@ -24,7 +24,7 @@ public class CreateMessageCommandHandler
     {
         var chat = await _dbContext.Chats
             .Where(x => x.Id == request.ChatId)
-            .Where(x => _userPrincipal.Role == Role.Admin || x.Users.Any(u => u.Id == _userPrincipal.UserId))
+            .Where(x => _userPrincipal.Role == Role.Admin || x.Members.Any(u => u.Id == _userPrincipal.UserId))
             .FirstOrDefaultAsync(cancellationToken);
         
         if (chat is null)

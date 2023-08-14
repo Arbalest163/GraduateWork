@@ -1,4 +1,4 @@
-import { FilterContext, ChatListVm, ChatVm, CreateChatDto, UpdateChatDto, CreateMessageDto, ChatInfoVm, MessageGroupsVm, EditChatVm } from "../models/models";
+import { FilterContext, ChatListVm, ChatVm, CreateChatDto, UpdateChatDto, CreateMessageDto, ChatInfoVm, MessageGroupsVm, EditChatVm, ChatDetailsVm } from "../models/models";
 import { ClientBase } from "./client-base";
 
 const apiVersion = '1.0';
@@ -65,11 +65,16 @@ export class ChatClient extends ClientBase {
 
     uploadFile(formData: FormData) : Promise<string> {
         return this.$http.postForm("chat/upload-file", formData)
-        .then(this.handleResponse, this.handleError);
+            .then(this.handleResponse, this.handleError);
     }
 
     joinChat(chatId: string) : Promise<void> {
         return this.$http.post("chat/join-chat", { chatId: chatId })
+            .then(this.handleResponse, this.handleError);
+    }
+
+    getChatDetails(chatId: string): Promise<ChatDetailsVm> {
+        return this.$http.get("chat/details", {chatId: chatId})
             .then(this.handleResponse, this.handleError);
     }
 };

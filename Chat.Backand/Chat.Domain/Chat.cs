@@ -20,7 +20,7 @@ public class Chat : Entity
     /// <summary>
     /// Участники чата
     /// </summary>
-    public virtual List<User> Users { get; set; } = new List<User>();
+    public virtual List<User> Members { get; set; } = new List<User>();
     /// <summary>
     /// Дата создания чата
     /// </summary>

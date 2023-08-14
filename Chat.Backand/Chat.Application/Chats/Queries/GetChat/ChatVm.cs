@@ -22,7 +22,7 @@ public class ChatVm : IMapWith<Domain.Chat>
             .ForMember(chatDto => chatDto.Title,
                 opt => opt.MapFrom(chat => chat.Title))
             .ForMember(chatDto => chatDto.Users,
-                opt => opt.MapFrom(chat => chat.Users))
+                opt => opt.MapFrom(chat => chat.Members))
             .ForMember(chatDto => chatDto.UserId,
                 opt => opt.MapFrom(chat => chat.User.Id))
             .ForMember(chatDto => chatDto.Messages,
