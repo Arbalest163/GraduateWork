@@ -184,8 +184,9 @@ const ChatMessageGroupsComponent : FC<ChatMessageGroupsProps> = ({chatId}) : Rea
                         <div className="container-for-messages">
                             {group.messages.map((message) => (
                                 message.isInformation 
-                                ? <div className="information-message-container">
-                                    <div className="information-message">{message.text}</div></div>
+                                ? <div className="information-message-container" key={message.text}>
+                                        <div className="information-message">{message.text}</div>
+                                    </div>
                                 :   message.isCreatorMessage 
                                     ? <div className={`container-for-message message-creator`} key={message.id}>
                                         <div className="delete-message-container">
